@@ -9,6 +9,8 @@
 
 .navbar-brand {
     font-size: 1.1rem;
+    text-align: center;
+    line-height: 28px;
 }
 
 .oi {
@@ -41,7 +43,7 @@
     }
 
 .nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.25);
+    background-color: #14F195;
     color: white;
 }
 
