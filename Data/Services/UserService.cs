@@ -8,9 +8,6 @@ namespace Osiris.Data.Services
     public class UserService
     {
         #region Property
-        #endregion
-
-        #region Property
         private readonly ApplicationDbContext _applicationDbContext;
         #endregion
 
@@ -57,7 +54,7 @@ namespace Osiris.Data.Services
         #region Delete User
         public async Task<bool> DeleteUserAsync(User user)
         {
-            _applicationDbContext.User.Remove(user);
+            _applicationDbContext.Remove(user);
             await _applicationDbContext.SaveChangesAsync();
             return true;
         }

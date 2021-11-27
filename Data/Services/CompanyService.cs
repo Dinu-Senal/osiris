@@ -54,7 +54,7 @@ namespace Osiris.Data.Services
         #region Delete Company
         public async Task<bool> DeleteCompanyAsync(Company company)
         {
-            _applicationDbContext.Companies.Remove(company);
+            _applicationDbContext.Remove(company);
             await _applicationDbContext.SaveChangesAsync();
             return true;
         }
