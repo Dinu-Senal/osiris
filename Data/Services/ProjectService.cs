@@ -35,7 +35,7 @@ namespace Osiris.Data.Services
         #endregion
 
         #region Get Project by Id
-        public async Task<Project> getProjectAsync(int Id)
+        public async Task<Project> GetProjectAsync(Guid Id)
         {
             Project project = await _applicationDbContenxt.Projects.FirstOrDefaultAsync(data => data.ProjectId.Equals(Id));
             return project;
@@ -43,7 +43,7 @@ namespace Osiris.Data.Services
         #endregion
 
         #region Update Project
-        public async Task<bool> updateProjectAsync(Project project)
+        public async Task<bool> UpdateProjectAsync(Project project)
         {
             _applicationDbContenxt.Projects.Update(project);
             await _applicationDbContenxt.SaveChangesAsync();
@@ -52,7 +52,7 @@ namespace Osiris.Data.Services
         #endregion
 
         #region Delete Project
-        public async Task<bool> deleteProjectAsync(Project project)
+        public async Task<bool> DeleteProjectAsync(Project project)
         {
             _applicationDbContenxt.Remove(project);
             await _applicationDbContenxt.SaveChangesAsync();
