@@ -20,6 +20,7 @@ else
                 <th>Temp. (C)</th>
                 <th>Temp. (F)</th>
                 <th>Summary</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
@@ -30,13 +31,31 @@ else
                     <td>@forecast.TemperatureC</td>
                     <td>@forecast.TemperatureF</td>
                     <td>@forecast.Summary</td>
+                    <td><button type="button" class="btn btn-danger" @onclick="()=> OnOpenDialog()"></button></td>
                 </tr>
             }
         </tbody>
     </table>
+    if (OpenDialog)
+    {
+        <ModalDeleteDialog Title="Are you sure ?" Text="Delete this man" OnClose="@OnCancelDialog"></ModalDeleteDialog>
+    }
+
 }
 
 @code {
+    public bool OpenDialog { get; set; }
+    private void OnCancelDialog(bool accepted)
+    {
+        OpenDialog = false;
+        StateHasChanged();
+    }
+    private void OnOpenDialog()
+    {
+        OpenDialog = true;
+        StateHasChanged();
+    }
+
     private WeatherForecast[] forecasts;
 
     protected override async Task OnInitializedAsync()

@@ -6,7 +6,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Create New Project</h4>
+                <h4 class="modal-title">@projectObject.Name</h4>
                 <button type="button" class="close" @onclick="@ModalCancel">&times;</button>
             </div>
             <EditForm Model="projectObject" OnValidSubmit="@ModalOk">
@@ -44,8 +44,15 @@
 @code {
     [Parameter]
     public EventCallback<Boolean> OnClose { get; set; }
+    [Parameter]
+    public String RetrievedData { get; set; }
 
     Project projectObject = new Project();
+
+    protected override async Task OnInitializedAsync()
+    {
+        projectObject = await Task.Run(() => projectService.GetProjectAsync(RetrievedData));
+    }
 
     private Task ModalCancel()
     {
@@ -54,7 +61,7 @@
 
     private async Task ModalOk()
     {
-        var result = await projectService.AddProjectAsync(projectObject);
+        await projectService.UpdateProjectAsync(projectObject);
         await OnClose.InvokeAsync(true);
     }
 }

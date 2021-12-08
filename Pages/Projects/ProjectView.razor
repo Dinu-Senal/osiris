@@ -1,0 +1,92 @@
+﻿@page  "/project/project-view/{Id}"
+@using Osiris.Data
+@inject ProjectService projectService
+@inject NavigationManager NavigationManager
+
+<h3>ProjectView</h3>
+
+@if (isLoaded.Equals(false))
+{
+    <LoadingSpinner />
+}
+else
+{
+    <p>@projectObject.Name</p>
+    <p>@projectObject.Description</p>
+    <button type="button" class="btn-remove" @onclick="() => OnOpenDeleteDialog()">Delete</button>
+    <button type="button" class="btn-outlined" @onclick="() => OnOpenEditDialog()">Edit</button>
+
+    @if (OpenDeleteDialog)
+    {
+        <ModalDeleteDialog Title="Are you sure ?"
+                     Text="@projectObject.Name"
+                     ButtonName="Delete"
+                     RetrievedData="@projectObject.ProjectId.ToString()"
+                     OnClose="@OnCancelDeleteDialog" />
+    }
+    @if(OpenUpdateDialog)
+                {
+                    <ProjectUpdate OnClose="@(OnCancelUpdateDialog)" RetrievedData="@projectObject.ProjectId.ToString()"/>
+                }
+}
+
+@code {
+    Boolean isLoaded = false;
+
+    [Parameter]
+    public String Id { get; set; }
+
+    Project projectObject = new Project();
+
+    private async Task loadData()
+    {
+        projectObject = await Task.Run(() => projectService.GetProjectAsync(Id));
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+        isLoaded = true;
+    }
+
+    /* Modal Logic */
+
+    /* Modal Deletion Logic */
+    public Boolean OpenDeleteDialog { get; set; }
+
+    private async Task OnCancelDeleteDialog(Boolean accepted)
+    {
+        if (accepted)
+        {
+            await projectService.DeleteProjectAsync(projectObject);
+            NavigationManager.NavigateTo("/projects");
+        }
+        OpenDeleteDialog = false;
+        StateHasChanged();
+    }
+
+    private void OnOpenDeleteDialog()
+    {
+        OpenDeleteDialog = true;
+        StateHasChanged();
+    }
+
+    /* Modal Update Logic */
+    public Boolean OpenUpdateDialog { get; set; }
+    private void OnOpenEditDialog()
+    {
+        OpenUpdateDialog = true;
+        StateHasChanged();
+    }
+
+    private async Task OnCancelUpdateDialog(Boolean accepted)
+    {
+        if (accepted)
+        {
+            await loadData();
+        }
+        OpenUpdateDialog = false;
+        StateHasChanged();
+    }
+}
