@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Osiris.Data
 {
@@ -12,5 +9,10 @@ namespace Osiris.Data
             : base(options)
         {
         }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Section> Sections { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
     }
 }
