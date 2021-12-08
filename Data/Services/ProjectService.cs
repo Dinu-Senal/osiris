@@ -35,9 +35,9 @@ namespace Osiris.Data.Services
         #endregion
 
         #region Get Project by Id
-        public async Task<Project> GetProjectAsync(Guid Id)
+        public async Task<Project> GetProjectAsync(String Id)
         {
-            Project project = await _applicationDbContenxt.Projects.FirstOrDefaultAsync(data => data.ProjectId.Equals(Id));
+            Project project = await _applicationDbContenxt.Projects.FirstOrDefaultAsync(data => data.ProjectId.ToString() == Id);
             return project;
         }
         #endregion

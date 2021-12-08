@@ -1,0 +1,67 @@
+﻿@page "/projects"
+@using Osiris.Data
+@inject ProjectService projectService
+@inject NavigationManager NavigationManager
+
+<div class="container pl-0">
+    <div class="row">
+        <div class="col-6">
+            <h3>Projects</h3>
+        </div>
+        <hr />
+        <div class="col-5">
+            <button class="button btn-main" @onclick="() => OnOpenDialog()">Create Project</button>
+        </div>
+    </div>
+</div>
+
+@if (ProjectObj is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    @foreach (var project in ProjectObj)
+    {
+        <div class="osiris-card mt-3">
+            <div class="text-center text-uppercase">@project.Name</div>
+            <a class="nav-link oi oi-arrow-circle-right" href="/project/project-view/@project.ProjectId" />
+        </div>
+    }
+    @if (OpenDialog)
+    {
+        <ProjectCreate OnClose="@(OnCancelDialog)" />
+    }
+}
+
+@code {
+    List<Project> ProjectObj;
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+    }
+
+    private async Task loadData()
+    {
+        ProjectObj = await Task.Run(() => projectService.GetAllProjectsAsync());
+        StateHasChanged();
+    }
+
+    /* Model Logic */
+    public Boolean OpenDialog { get; set; }
+    private void OnOpenDialog()
+    {
+        OpenDialog = true;
+        StateHasChanged();
+    }
+
+    private async Task OnCancelDialog(Boolean accepted)
+    {
+        if (accepted)
+        {
+            await loadData();
+        }
+        OpenDialog = false;
+        StateHasChanged();
+    }
+}
