@@ -15,13 +15,13 @@
     </div>
 </div>
 
-@if (ProjectObj is null)
+@if (projectListObj is null)
 {
     <LoadingSpinner />
 }
 else
 {
-    @foreach (var project in ProjectObj)
+    @foreach (var project in projectListObj)
     {
         <div class="osiris-card mt-3">
             <div class="text-center text-uppercase">@project.Name</div>
@@ -35,16 +35,16 @@ else
 }
 
 @code {
-    List<Project> ProjectObj;
-    protected override async Task OnInitializedAsync()
-    {
-        await loadData();
-    }
+    List<Project> projectListObj;
 
     private async Task loadData()
     {
-        ProjectObj = await Task.Run(() => projectService.GetAllProjectsAsync());
+        projectListObj = await Task.Run(() => projectService.GetAllProjectsAsync());
         StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
     }
 
     /* Model Logic */
@@ -54,7 +54,6 @@ else
         OpenDialog = true;
         StateHasChanged();
     }
-
     private async Task OnCancelDialog(Boolean accepted)
     {
         if (accepted)

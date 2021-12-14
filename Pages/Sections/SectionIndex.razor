@@ -1,0 +1,187 @@
+﻿@page  "/project/project-view/{ProjectId:guid}/section-board"
+@using Osiris.Data
+@inject SectionService sectionService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@inject IJSRuntime jsRuntime
+
+@if (sectionListObj is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <div class="section-title">
+        <h3 class="mr-3">Manage Your Tickets</h3>
+        <button type="button" class="button btn-main mb-3" @onclick="() => OnOpenSectionDialog(true)">Add Section</button>
+    </div>
+    <div class="scrollmenu">
+        @foreach (var sect in sectionListObj)
+        {
+            if (sect.ProjectId == ProjectId)
+            {
+                <div class="section">
+                    <div class="osiris-section-card mt-3 mr-3">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-7">@sect.Name</div>
+                                <div class="col-1 oi oi-plus"></div>
+                                <div class="col-1 oi oi-pencil" @onclick="() => EditSection(sect.SectionId)"></div>
+                                <div class="col-1 oi oi-delete" @onclick="() => OnOpenSectionDeleteDialog(sect.SectionId)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    if (OpenSectionDialog)
+    {
+        #region Create Section
+        <div class="modal fade show" id="sectionCreateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Create New Section</h4>
+                    </div>
+
+                    <EditForm Model="sectionObject" OnValidSubmit="@SectionModalOk">
+                        <div class="modal-body">
+                            <DataAnnotationsValidator />
+
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Name</label>
+                                <InputText @bind-Value="sectionObject.Name"></InputText>
+                                <ValidationMessage For="@(() => sectionObject.Name)" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="button btn-main">Create</button>
+                            <button type="button" class="btn-outlined" @onclick="() => OnOpenSectionDialog(false)">Cancel</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        #endregion
+    }
+
+    if (OpenSectionEditDialog)
+    {
+        #region Edit Section
+        <div class="modal fade show" id="sectionUpdateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Create New Section</h4>
+                    </div>
+
+                    <EditForm Model="sectionObject">
+                        <div class="modal-body">
+                            <DataAnnotationsValidator />
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Name</label>
+                                <InputText @bind-Value="sectionObject.Name"></InputText>
+                                <ValidationMessage For="@(() => sectionObject.Name)" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-outlined" @onclick="() => OnCancelEditSectionDialog()">Close</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        #endregion
+    }
+    if (OpenSectionDeleteDialog)
+    {
+        #region Delete Section
+        <div class="modal fade show" id="deleteModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Do want to delete section?</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-remove" @onclick="() => OnSectionDeleteDialog()">Delete</button>
+                        <button type="button" class="btn-outlined" @onclick="() => OnCancelSectionDeleteDialog()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        #endregion
+    }
+
+}
+
+@code {
+    List<Section> sectionListObj;
+    Section sectionObject = new Section();
+
+    [Parameter]
+    public Guid ProjectId { get; set; }
+
+    private async Task loadData()
+    {
+        sectionListObj = await Task.Run(() => sectionService.GetAllSectionsAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+    }
+
+    /* Modal Logic */
+
+    /* Model Section Deletion Logic */
+    private Boolean OpenSectionDeleteDialog { get; set; }
+    private Guid SectionId { get; set; }
+    private void OnOpenSectionDeleteDialog(Guid Id)
+    {
+        SectionId = Id;
+        OpenSectionDeleteDialog = true;
+    }
+    private void OnCancelSectionDeleteDialog()
+    {
+        OpenSectionDeleteDialog = false;
+    }
+    private async Task OnSectionDeleteDialog()
+    {
+        await sectionService.DeleteSectionByIdAsync(SectionId);
+        OpenSectionDeleteDialog = false;
+        await loadData();
+        StateHasChanged();
+    }
+
+    /* Model Section Edit Logic */
+    private Boolean OpenSectionEditDialog { get; set; }
+    private void EditSection(Guid sectionId)
+    {
+        OpenSectionEditDialog = true;
+        sectionObject = sectionListObj.FirstOrDefault(data => data.SectionId == sectionId);
+    }
+    private void OnCancelEditSectionDialog()
+    {
+        OpenSectionEditDialog = false;
+    }
+
+
+    /* Model Section Logic */
+    private Boolean OpenSectionDialog { get; set; }
+    private async void OnOpenSectionDialog(Boolean opened)
+    {
+        OpenSectionDialog = opened;
+        await loadData();
+        sectionObject = new Section();
+        StateHasChanged();
+    }
+    private async Task SectionModalOk()
+    {
+        sectionObject.ProjectId = ProjectId;
+        await sectionService.AddSectionAsync(sectionObject);
+        sectionObject = new Section();
+        OnOpenSectionDialog(false);
+    }
+}

@@ -12,7 +12,9 @@ namespace Osiris.Data
         [Required]
         public String Name { get; set; }
 
+        public Guid ProjectId { get; set; }
         public Project Project { get; set; }
+
         public List<Ticket> Tickets { get; set; }
     }
 }

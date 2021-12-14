@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Osiris.Data;
 
-namespace Osiris.Data.Migrations
+namespace Osiris.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211127064048_Major Services Updated")]
-    partial class MajorServicesUpdated
+    [Migration("20211214110529_migration version 01")]
+    partial class migrationversion01
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -275,7 +275,7 @@ namespace Osiris.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ProjectId")
+                    b.Property<Guid>("ProjectId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("SectionId");
@@ -418,7 +418,9 @@ namespace Osiris.Data.Migrations
                 {
                     b.HasOne("Osiris.Data.Project", "Project")
                         .WithMany("Sections")
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Project");
                 });
