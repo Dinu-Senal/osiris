@@ -2,17 +2,16 @@
 @inject ProjectService projectService
 @inject NavigationManager NavigationManager
 
-<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+<div class="modal fade show" id="projectUpdateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">@projectObject.Name</h4>
-                <button type="button" class="close" @onclick="@ModalCancel">&times;</button>
             </div>
+
             <EditForm Model="projectObject" OnValidSubmit="@ModalOk">
                 <div class="modal-body">
                     <DataAnnotationsValidator />
-
                     <div class="form-group">
                         <label for="Name" class="control-label">Name</label>
                         <InputText @bind-Value="projectObject.Name"></InputText>
@@ -33,7 +32,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="button btn-main">Create</button>
+                    <button type="submit" class="button btn-main">Update</button>
                     <button type="button" class="btn-outlined" @onclick="@ModalCancel">Cancel</button>
                 </div>
             </EditForm>
@@ -46,19 +45,16 @@
     public EventCallback<Boolean> OnClose { get; set; }
     [Parameter]
     public String RetrievedData { get; set; }
-
     Project projectObject = new Project();
 
     protected override async Task OnInitializedAsync()
     {
         projectObject = await Task.Run(() => projectService.GetProjectAsync(RetrievedData));
     }
-
     private Task ModalCancel()
     {
         return OnClose.InvokeAsync(false);
     }
-
     private async Task ModalOk()
     {
         await projectService.UpdateProjectAsync(projectObject);

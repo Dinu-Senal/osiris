@@ -2,6 +2,7 @@
 
 html, body {
     font-family: 'Montserrat', sans-serif;
+    background: #edeae9;
 }
 
 a, .btn-link {
@@ -27,7 +28,7 @@ a, .btn-link {
 
 .btn-outlined {
     color: #000;
-    background-color: #fff;
+    background-color: transparent;
     border: 1px solid #16C79A;
     display: inline-block;
     font-weight: 400;
@@ -124,3 +125,47 @@ a, .btn-link {
     background: #16C79A;
 }
 
+.section-title {
+    display: inline-flex;
+}
+
+.section {
+    display: inline-block;
+}
+
+.osiris-section-card {
+    width: 285px;
+    background-color: transparent;
+    color: #000000;
+    padding: 25px;
+    border-radius: 20px;
+    display: block;
+    white-space: normal;
+}
+
+.osiris-section-card:hover {
+    border: 1px solid #151B26;
+}
+
+.task-name {
+    overflow-wrap: break-word;
+}
+
+.scrollmenu {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    width: 1024px;
+}
+
+.oi-pencil:hover {
+    color: #16C79A;
+}
+
+.oi-plus:hover {
+    color: #16C79A;
+}
+
+.oi-delete:hover {
+    color: #C81912;
+}

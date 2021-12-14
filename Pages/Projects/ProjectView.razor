@@ -1,9 +1,7 @@
-﻿@page  "/project/project-view/{Id}"
+﻿@page "/project/project-view/{Id}/"
 @using Osiris.Data
 @inject ProjectService projectService
 @inject NavigationManager NavigationManager
-
-<h3>ProjectView</h3>
 
 @if (isLoaded.Equals(false))
 {
@@ -11,39 +9,39 @@
 }
 else
 {
-    <p>@projectObject.Name</p>
+    <h3>Project @projectObject.Name</h3>
     <p>@projectObject.Description</p>
+    <p>@projectObject.ProjectId</p>
+
     <button type="button" class="btn-remove" @onclick="() => OnOpenDeleteDialog()">Delete</button>
     <button type="button" class="btn-outlined" @onclick="() => OnOpenEditDialog()">Edit</button>
+    <a class="btn-outlined" href="/project/project-view/@projectObject.ProjectId/section-board">Section</a>
 
     @if (OpenDeleteDialog)
     {
         <ModalDeleteDialog Title="Are you sure ?"
-                     Text="@projectObject.Name"
-                     ButtonName="Delete"
-                     RetrievedData="@projectObject.ProjectId.ToString()"
-                     OnClose="@OnCancelDeleteDialog" />
+                           Text="@projectObject.Name"
+                           ButtonName="Delete"
+                           RetrievedData="@projectObject.ProjectId.ToString()"
+                           OnClose="@OnProjectDeleteDialog" />
     }
-    @if(OpenUpdateDialog)
-                {
-                    <ProjectUpdate OnClose="@(OnCancelUpdateDialog)" RetrievedData="@projectObject.ProjectId.ToString()"/>
-                }
+    @if (OpenUpdateDialog)
+    {
+        <ProjectUpdate OnClose="@(OnCancelUpdateDialog)" RetrievedData="@projectObject.ProjectId.ToString()" />
+    }
 }
 
 @code {
-    Boolean isLoaded = false;
-
     [Parameter]
     public String Id { get; set; }
-
     Project projectObject = new Project();
+    Boolean isLoaded = false;
 
     private async Task loadData()
     {
         projectObject = await Task.Run(() => projectService.GetProjectAsync(Id));
         StateHasChanged();
     }
-
     protected override async Task OnInitializedAsync()
     {
         await loadData();
@@ -52,10 +50,9 @@ else
 
     /* Modal Logic */
 
-    /* Modal Deletion Logic */
+    /* Modal Project Deletion Logic */
     public Boolean OpenDeleteDialog { get; set; }
-
-    private async Task OnCancelDeleteDialog(Boolean accepted)
+    private async Task OnProjectDeleteDialog(Boolean accepted)
     {
         if (accepted)
         {
@@ -65,21 +62,19 @@ else
         OpenDeleteDialog = false;
         StateHasChanged();
     }
-
     private void OnOpenDeleteDialog()
     {
         OpenDeleteDialog = true;
         StateHasChanged();
     }
 
-    /* Modal Update Logic */
+    /* Modal Project Update Logic */
     public Boolean OpenUpdateDialog { get; set; }
     private void OnOpenEditDialog()
     {
         OpenUpdateDialog = true;
         StateHasChanged();
     }
-
     private async Task OnCancelUpdateDialog(Boolean accepted)
     {
         if (accepted)

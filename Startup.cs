@@ -45,7 +45,11 @@ namespace Osiris
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<WeatherForecastService>();
+            services.AddScoped<CompanyService>();
+            services.AddScoped<UserService>();
             services.AddScoped<ProjectService>();
+            services.AddScoped<SectionService>();
+            services.AddScoped<TicketService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
