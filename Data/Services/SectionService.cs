@@ -9,28 +9,28 @@ namespace Osiris.Data.Services
     public class SectionService
     {
         #region Property
-        public readonly ApplicationDbContext _applicationDbContenxt;
+        public readonly ApplicationDbContext _applicationDbContext;
         #endregion
 
         #region Constructor
         public SectionService(ApplicationDbContext appDbContext)
         {
-            _applicationDbContenxt = appDbContext;
+            _applicationDbContext = appDbContext;
         }
         #endregion
 
         #region Get List of Sections
         public async Task<List<Section>> GetAllSectionsAsync()
         {
-            return await _applicationDbContenxt.Sections.ToListAsync();
+            return await _applicationDbContext.Sections.ToListAsync();
         }
         #endregion
 
         #region Add Section
         public async Task<bool> AddSectionAsync(Section section)
         {
-            await _applicationDbContenxt.Sections.AddAsync(section);
-            await _applicationDbContenxt.SaveChangesAsync();
+            await _applicationDbContext.Sections.AddAsync(section);
+            await _applicationDbContext.SaveChangesAsync();
             return true;
         }
         #endregion
@@ -38,8 +38,8 @@ namespace Osiris.Data.Services
         #region Update Section
         public async Task<bool> UpdateSectionAsync(Section section)
         {
-            _applicationDbContenxt.Sections.Update(section);
-            await _applicationDbContenxt.SaveChangesAsync();
+            _applicationDbContext.Sections.Update(section);
+            await _applicationDbContext.SaveChangesAsync();
             return true;
         }
         #endregion
@@ -47,21 +47,23 @@ namespace Osiris.Data.Services
         #region Delete Section
         public async Task<bool> DeleteSectionAsync(Section section)
         {
-            _applicationDbContenxt.Remove(section);
-            await _applicationDbContenxt.SaveChangesAsync();
+            _applicationDbContext.Remove(section);
+            await _applicationDbContext.SaveChangesAsync();
             return true;
         }
         #endregion
 
+        #region Delete Section by Id
         public async Task<bool> DeleteSectionByIdAsync(Guid sectionId)
         {
-            var Section = _applicationDbContenxt.Sections.FirstOrDefault(data => data.SectionId == sectionId);
+            var Section = _applicationDbContext.Sections.FirstOrDefault(data => data.SectionId == sectionId);
             if (Section != null)
             {
-                _applicationDbContenxt.Remove(Section);
-                await _applicationDbContenxt.SaveChangesAsync();
+                _applicationDbContext.Remove(Section);
+                await _applicationDbContext.SaveChangesAsync();
             }
             return true;
         }
+        #endregion
     }
 }

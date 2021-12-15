@@ -10,8 +10,8 @@ using Osiris.Data;
 namespace Osiris.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211214110529_migration version 01")]
-    partial class migrationversion01
+    [Migration("20211215082716_migration version 2")]
+    partial class migrationversion2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -294,14 +294,21 @@ namespace Osiris.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SectionId")
+                    b.Property<Guid>("SectionId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TicketId");
@@ -408,7 +415,7 @@ namespace Osiris.Migrations
             modelBuilder.Entity("Osiris.Data.Project", b =>
                 {
                     b.HasOne("Osiris.Data.Company", "Company")
-                        .WithMany()
+                        .WithMany("Projects")
                         .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
@@ -427,9 +434,13 @@ namespace Osiris.Migrations
 
             modelBuilder.Entity("Osiris.Data.Ticket", b =>
                 {
-                    b.HasOne("Osiris.Data.Section", null)
+                    b.HasOne("Osiris.Data.Section", "Section")
                         .WithMany("Tickets")
-                        .HasForeignKey("SectionId");
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Section");
                 });
 
             modelBuilder.Entity("Osiris.Data.User", b =>
@@ -458,6 +469,11 @@ namespace Osiris.Migrations
                         .HasForeignKey("UsersUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Osiris.Data.Company", b =>
+                {
+                    b.Navigation("Projects");
                 });
 
             modelBuilder.Entity("Osiris.Data.Project", b =>

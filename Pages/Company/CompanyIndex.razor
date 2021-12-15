@@ -1,0 +1,58 @@
+﻿@page "/Company"
+@using Osiris.Data;
+@inject CompanyService companyService
+@inject NavigationManager NavigationManager
+
+<div class="container pl-0">
+    <div class="row">
+        <div class="col-6">
+            <h3>Companies</h3>
+        </div>
+        <hr />
+        <div class="col-5">
+            <button class="button btn-main" @onclick="() => OnOpenCompanyAddDialog()">Create Company</button>
+        </div>
+    </div>
+</div>
+@if (companyListObj is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    @foreach (var company in companyListObj)
+    {
+        <div class="osiris-card mt-3">
+            <div class="text-center text-uppercase">@company.Name</div>
+        </div>
+    }
+    @if (OpenAddCompanyDialog)
+    {
+
+    }
+}
+
+
+
+@code {
+    List<Company> companyListObj;
+
+    private async Task loadData()
+    {
+        companyListObj = await Task.Run(() => companyService.GetAllCompaniesAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+    }
+
+    /* Modal Logic */
+
+    /* Company Modal Logic*/
+    private Boolean OpenAddCompanyDialog { get; set; }
+    private void OnOpenCompanyAddDialog()
+    {
+        OpenAddCompanyDialog = true;
+    }
+}
