@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,14 +35,6 @@ namespace Osiris.Data.Services
         }
         #endregion
 
-        #region Get Ticket by Id
-        public async Task<Ticket> GetTicketAsync(Guid Id)
-        {
-            Ticket ticket = await _applicationDbContext.Tickets.FirstOrDefaultAsync(data => data.TicketId.Equals(Id));
-            return ticket;
-        }
-        #endregion
-
         #region Update Tickets
         public async Task<bool> UpdateTicketAsync(Ticket ticket)
         {
@@ -56,6 +49,19 @@ namespace Osiris.Data.Services
         {
             _applicationDbContext.Remove(ticket);
             await _applicationDbContext.SaveChangesAsync();
+            return true;
+        }
+        #endregion
+
+        #region Delete Ticket by Id
+        public async Task<bool> DeleteTicketByIdAsync(Guid ticketId)
+        {
+            var Ticket = _applicationDbContext.Tickets.FirstOrDefault(data => data.TicketId == ticketId);
+            if (Ticket != null)
+            {
+                _applicationDbContext.Remove(Ticket);
+                await _applicationDbContext.SaveChangesAsync();
+            }
             return true;
         }
         #endregion
