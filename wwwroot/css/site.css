@@ -181,6 +181,11 @@ a, .btn-link {
     color: #16C79A;
 }
 
+.oi-x {
+    font-size: 50px;
+    color: #C81912;
+}
+
 /* Ticket */
 .ticket-container {
     overflow-x: hidden;
@@ -207,3 +212,21 @@ a, .btn-link {
 .ticket-title {
     word-break: break-word;
 }
+
+/* Error Message Card */
+
+.error-card {
+    width: 285px;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 25px;
+    border-radius: 8px;
+    max-width: 500px;
+    position: fixed;
+    top: 25%;
+    left: 40%;
+    text-align:center;
+}
+
+
+/* Modal Styles */

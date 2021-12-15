@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,6 +57,19 @@ namespace Osiris.Data.Services
         {
             _applicationDbContext.Remove(company);
             await _applicationDbContext.SaveChangesAsync();
+            return true;
+        }
+        #endregion
+
+        #region Delete Ticket by Id
+        public async Task<bool> DeleteCompanyByIdAsync(Guid companyId)
+        {
+            var Company = _applicationDbContext.Companies.FirstOrDefault(data => data.CompanyId == companyId);
+            if (Company != null)
+            {
+                _applicationDbContext.Remove(Company);
+                await _applicationDbContext.SaveChangesAsync();
+            }
             return true;
         }
         #endregion

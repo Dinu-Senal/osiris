@@ -6,7 +6,6 @@
             </div>
             <div class="modal-body">
                 <p>@Text</p>
-                <p>@RetrievedData</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-remove" @onclick="@ModalAccepted">@ButtonName</button>
@@ -20,13 +19,11 @@
     [Parameter]
     public String Title { get; set; }
     [Parameter]
-    public String Text { get; set; }
+    public String Text { get; set; } = "";
     [Parameter]
     public EventCallback<Boolean> OnClose { get; set; }
     [Parameter]
     public String ButtonName { get; set; }
-    [Parameter]
-    public String RetrievedData { get; set; }
 
     private Task ModalCancel()
     {
