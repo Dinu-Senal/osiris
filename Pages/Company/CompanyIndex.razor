@@ -23,19 +23,66 @@ else
     @foreach (var company in companyListObj)
     {
         <div class="osiris-card mt-3">
-            <div class="text-center text-uppercase">@company.Name</div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-7 text-center text-uppercase">@company.Name</div>
+                    <div class="col-1 oi oi-external-link mr-2 h4" @onclick="() => OnOpenCompanyEditDialog(company.CompanyId)" />
+                    <div class="col-1 oi oi-circle-x h4" @onclick="() => OnOpenDeleteDialog(company.CompanyId)" />
+                </div>
+            </div>
         </div>
     }
     @if (OpenAddCompanyDialog)
     {
+        <CompanyCreate OnClose="@(OnCancelAddCompanyDialog)" />
+    }
+    @if (OpenDeleteCompanyDialog)
+    {
+        <ModalDeleteDialog Title="Are you sure ?"
+                           Text="This may cause to lose projects that are assigned to this company."
+                           ButtonName="Delete"
+                           OnClose="@OnProjectDeleteDialog" />
+    }
+    @if (OpenEditCompanyDialog)
+    {
+        #region Edit Company
+        <div class="modal fade show" id="companyEditModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Company Details</h4>
+                    </div>
 
+                    <EditForm Model="companyObject" OnValidSubmit="@EditTicket">
+                        <div class="modal-body">
+                            <DataAnnotationsValidator />
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Name</label>
+                                <InputText @bind-Value="companyObject.Name"></InputText>
+                                <ValidationMessage For="@(() => companyObject.Name)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Description" class="control-label">Description</label>
+                                <InputText @bind-Value="@companyObject.Description"></InputText>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="button btn-main">Confirm</button>
+                            <button type="button" class="btn-outlined" @onclick="@OnCancelCompanyEditDialog">Cancel</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        #endregion 
     }
 }
 
-
-
 @code {
     List<Company> companyListObj;
+    Company companyObject = new Company();
+    public Guid CompanyId { get; set; }
 
     private async Task loadData()
     {
@@ -50,9 +97,57 @@ else
     /* Modal Logic */
 
     /* Company Modal Logic*/
+    /* Company Add Logic */
     private Boolean OpenAddCompanyDialog { get; set; }
     private void OnOpenCompanyAddDialog()
     {
         OpenAddCompanyDialog = true;
     }
+    private async Task OnCancelAddCompanyDialog(Boolean accepted)
+    {
+        if (accepted)
+        {
+            await loadData();
+        }
+        OpenAddCompanyDialog = false;
+        StateHasChanged();
+    }
+
+    /*Ticket Edit Logic */
+    private Boolean OpenEditCompanyDialog { get; set; }
+    private void OnOpenCompanyEditDialog(Guid companyId)
+    {
+        OpenEditCompanyDialog = true;
+        companyObject = companyListObj.FirstOrDefault(data => data.CompanyId == CompanyId);
+    }
+    private void OnCancelCompanyEditDialog()
+    {
+        OpenEditCompanyDialog = false;
+    }
+    private async Task EditTicket()
+    {
+        await companyService.UpdateCompanyAsync(companyObject);
+        OpenEditCompanyDialog = false;
+        companyObject = new Company();
+        StateHasChanged();
+    }
+
+    /* Company Delete Logic */
+    public Boolean OpenDeleteCompanyDialog { get; set; }
+    private void OnOpenDeleteDialog(Guid companyId)
+    {
+        CompanyId = companyId;
+        OpenDeleteCompanyDialog = true;
+    }
+    private async Task OnProjectDeleteDialog(Boolean accepted)
+    {
+        if (accepted)
+        {
+            await companyService.DeleteCompanyByIdAsync(CompanyId);
+        }
+        OpenDeleteCompanyDialog = false;
+        await loadData();
+        StateHasChanged();
+    }
+
 }

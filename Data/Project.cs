@@ -10,11 +10,13 @@ namespace Osiris.Data
         public Guid ProjectId { get; set; }
 
         [Required]
+        [StringLength(50)]
         public String Name { get; set; }
 
         public String Description { get; set; }
         public String Status { get; set; }
 
+        public Guid CompanyId { get; set; }
         public Company Company { get; set; }
 
         public List<User> Users { get; set; }

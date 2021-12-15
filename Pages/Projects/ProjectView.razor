@@ -22,7 +22,6 @@ else
         <ModalDeleteDialog Title="Are you sure ?"
                            Text="@projectObject.Name"
                            ButtonName="Delete"
-                           RetrievedData="@projectObject.ProjectId.ToString()"
                            OnClose="@OnProjectDeleteDialog" />
     }
     @if (OpenUpdateDialog)

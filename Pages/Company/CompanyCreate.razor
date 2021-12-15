@@ -1,0 +1,50 @@
+﻿@using Osiris.Data
+@inject CompanyService companyService
+@inject NavigationManager NavigationManager
+
+<div class="modal fade show" id="companyCreateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create New Company</h4>
+            </div>
+
+            <EditForm Model="companyObject" OnValidSubmit="@ModalOk">
+                <div class="modal-body">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label for="Name" class="control-label">Name</label>
+                        <InputText @bind-Value="companyObject.Name"></InputText>
+                        <ValidationMessage For="@(() => companyObject.Name)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Description" class="control-label">Description</label>
+                        <InputText @bind-Value="@companyObject.Description"></InputText>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="button btn-main">Create</button>
+                    <button type="button" class="btn-outlined" @onclick="@ModalCancel">Cancel</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<Boolean> OnClose { get; set; }
+    Company companyObject = new Company();
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+
+    private async Task ModalOk()
+    {
+        var result = await companyService.AddCompanyAsync(companyObject);
+        await OnClose.InvokeAsync(true);
+    }
+}

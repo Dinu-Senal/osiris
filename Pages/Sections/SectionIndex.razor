@@ -177,6 +177,7 @@ else
                                     <option value="Complete">Complete</option>
                                     <option value="Incomplete">Incomplete</option>
                                 </InputSelect>
+                                <ValidationMessage For="@(() => ticketObject.Status)" />
                             </div>
                             <div class="form-group">
                                 <label for="StartingDate" class="control-label">Starting Date</label>
@@ -227,6 +228,7 @@ else
                                     <option value="Complete">Complete</option>
                                     <option value="Incomplete">Incomplete</option>
                                 </InputSelect>
+                                <ValidationMessage For="@(() => ticketObject.Status)" />
                             </div>
                             <div class="form-group">
                                 <label for="StartingDate" class="control-label">Starting Date</label>
