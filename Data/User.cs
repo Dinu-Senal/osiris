@@ -8,13 +8,16 @@ namespace Osiris.Data
     {
         [Key]
         public Guid UserId { get; set; }
-        
+
         [Required]
         public String Name { get; set; }
 
+        [Required]
+        public String Designation { get; set; }
+
         public Boolean Type { get; set; }
 
+        public Guid CompanyId { get; set; }
         public Company Company { get; set; }
-        public List<Project> Projects { get; set; }
     }
 }

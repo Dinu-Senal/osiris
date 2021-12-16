@@ -15,5 +15,6 @@ namespace Osiris.Data
         public String Description { get; set; }
 
         public List<Project> Projects { get; set; }
+        public List<User> Users { get; set; }
     }
 }

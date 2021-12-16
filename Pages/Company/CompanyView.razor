@@ -1,0 +1,215 @@
+﻿@page "/company/company-view/{CompanyId}/"
+@using Osiris.Data
+@using Osiris.Pages.User
+@inject CompanyService companyService
+@inject UserService userService
+@inject NavigationManager NavigationManager
+
+@if (isLoaded.Equals(false))
+{
+    <LoadingSpinner />
+}
+else
+{
+    <div class="container pl-0 mb-5">
+        <div class="row">
+            <div class="company-logo pl-3 ml-3">
+                <div class="oi oi-briefcase h3" style="top: -15px; color: #000000" />
+            </div>
+            <div class="col-3" style="top: 4px">
+                <div class="company-title">@companyObject.Name</div>
+            </div>
+            <div class="col-1" style="max-width:none; top: 9px">
+                <button class="button btn-main" style="height: 35px; width: max-content" @onclick="OnOpenCompanyEditDialog">
+                    <div class="mr-2 oi oi-pencil h7" style="color: #fff" />Edit
+                </button>
+            </div>
+            <div class="col-1" style="max-width: none; top: 9px">
+                <button class="btn-remove" style="height: 35px; width: max-content" @onclick="OnOpenCompanyDeleteDialog">
+                    <div class="mr-2 oi oi-trash h7" style="color: #fff" />Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="company-details">
+        <div class="company-title mb-2">Company Description</div>
+        <p>@companyObject.Description</p>
+        <div class="company-title mb-2">Company Roles</div>
+        <button class="col-1 btn-outlined" style="max-width:200px" @onclick="OnOpenUserAddDialog">Add User</button>
+        @if (userListObj is null)
+        {
+            <LoadingSpinner />
+        }
+        else
+        {
+            @foreach (var users in userListObj)
+            {
+                if (users.CompanyId == companyObject.CompanyId)
+                {
+                    <div>@users.Name</div>
+                }
+            }
+        }
+    </div>
+
+    @if (OpenDeleteCompanyDialog)
+    {
+        <ModalDeleteDialog Title="Are you sure ?"
+                           Text="This may cause to lose projects that are assigned to this company."
+                           ButtonName="Delete"
+                           OnClose="@DeleteCompany" />
+    }
+    @if (OpenEditCompanyDialog)
+    {
+        <CompanyUpdate OnClose="@(EditCompany)" RetrievedData="@companyObject.CompanyId.ToString()" />
+    }
+    @if (OpenAddUserDialog)
+    {
+        #region Add User
+        <div class="modal fade show" id="userAddModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">User Add</h4>
+                    </div>
+
+                    <EditForm Model="userObject" OnValidSubmit="@AddUser">
+                        <div class="modal-body">
+                            <DataAnnotationsValidator />
+                            <div class="form-group">
+                                <label for="Name" class="control-label">Name</label>
+                                <InputText @bind-Value="userObject.Name"></InputText>
+                                <ValidationMessage For="@(() => userObject.Name)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Designation" class="control-label">User Type</label>
+                                <InputSelect @bind-Value="@userObject.Designation">
+                                    <option value="" selected disabled hidden>Choose User Type</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Collaborator">Collaborator</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => userObject.Designation)" />
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="button btn-main">Add</button>
+                            <button type="button" class="btn-outlined" @onclick="@OnCancelTicketEditDialog">Cancel</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+        #endregion
+    }
+    @if (InvitationSendSuccess)
+    {
+        <div class="modal fade show" id="invitationModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+            <div class="notification-card">
+                <div class="d-flex justify-content-center mb-3">
+                    <div class="oi oi-check" />
+                </div>
+                <div class="mb-3">Invitation Send Successfully</div>
+                <button class="button btn-main" @onclick="OnInvitationMessage">Back</button>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public String CompanyId { get; set; }
+
+    List<Company> companyListObj;
+    List<User> userListObj;
+    Company companyObject = new Company();
+    User userObject = new User();
+
+    Boolean isLoaded = true;
+
+    private async Task loadCompanyData()
+    {
+        companyObject = await Task.Run(() => companyService.GetCompanyAsync(CompanyId));
+        StateHasChanged();
+    }
+    private async Task loadUserData()
+    {
+        userListObj = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadCompanyData();
+        await loadUserData();
+        isLoaded = true;
+    }
+
+    /* Modal Logic */
+
+    /* Company Modal Logic */
+    /* Company Delete Logic */
+    public Boolean OpenDeleteCompanyDialog { get; set; }
+    private void OnOpenCompanyDeleteDialog()
+    {
+        OpenDeleteCompanyDialog = true;
+    }
+    private async Task DeleteCompany(Boolean accepted)
+    {
+        if (accepted)
+        {
+            await companyService.DeleteCompanyAsync(companyObject);
+            NavigationManager.NavigateTo("/companies");
+        }
+        OpenDeleteCompanyDialog = false;
+        StateHasChanged();
+    }
+
+    /* Company Edit Logic */
+    private Boolean OpenEditCompanyDialog { get; set; }
+    private void OnOpenCompanyEditDialog()
+    {
+        OpenEditCompanyDialog = true;
+    }
+    private async Task EditCompany(Boolean accepted)
+    {
+        if (accepted)
+        {
+            await loadCompanyData();
+        }
+        OpenEditCompanyDialog = false;
+        StateHasChanged();
+    }
+
+    /* User Modal Logic */
+    /* User Add Logic */
+    private Boolean OpenAddUserDialog { get; set; }
+    private Boolean InvitationSendSuccess { get; set; }
+    private void OnOpenUserAddDialog()
+    {
+        userObject = new User();
+        OpenAddUserDialog = true;
+    }
+    private void OnCancelTicketEditDialog()
+    {
+        OpenAddUserDialog = false;
+    }
+    private void OnInvitationMessage()
+    {
+        InvitationSendSuccess = false;
+    }
+    private async Task AddUser()
+    {
+        userObject.CompanyId = companyObject.CompanyId;
+        if (userObject.Designation == "Admin")
+        {
+            userObject.Type = true;
+        }
+        await userService.AddUserAsync(userObject);
+        OpenAddUserDialog = false;
+        await loadUserData();
+        StateHasChanged();
+        InvitationSendSuccess = true;
+    }
+}

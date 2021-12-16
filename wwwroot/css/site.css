@@ -37,9 +37,13 @@ a, .btn-link {
     text-decoration: none;
 }
 
+.btn-outlined:hover {
+        background-color: #D5E9E4;
+}
+
 .btn-remove {
-    color: #fff;
-    background-color: #C81912;
+    color: #ffffff;
+    background-color: #F06A6A;
     border: none;
     display: inline-block;
     font-weight: 400;
@@ -49,8 +53,7 @@ a, .btn-link {
 }
 
 .btn-remove:hover {
-    background-color: #B91710;
-    color: #ffffff;
+    background-color: #E94D4D;
     text-decoration: none;
 }
 
@@ -67,7 +70,7 @@ a, .btn-link {
 }
 
 .validation-message {
-    color: red;
+    color: #E94D4D;
 }
 
 #blazor-error-ui {
@@ -170,20 +173,25 @@ a, .btn-link {
 }
 
 .oi-delete:hover {
-    color: #C81912;
+    color: #F06A6A;
 }
 
 .oi-circle-x:hover {
-    color: #C81912;
+    color: #F06A6A;
 }
 
 .oi-external-link:hover {
     color: #16C79A;
 }
 
-.oi-x {
+.oi-warning {
     font-size: 50px;
-    color: #C81912;
+    color: #F06A6A;
+}
+
+.oi-check {
+    font-size: 50px;
+    color: #16C79A;
 }
 
 /* Ticket */
@@ -213,9 +221,9 @@ a, .btn-link {
     word-break: break-word;
 }
 
-/* Error Message Card */
+/* Message Card */
 
-.error-card {
+.notification-card {
     width: 285px;
     background-color: #ffffff;
     color: #000000;
@@ -225,8 +233,48 @@ a, .btn-link {
     position: fixed;
     top: 25%;
     left: 40%;
-    text-align:center;
+    text-align: center;
 }
 
+/* Company Styles */
+
+.company-title {
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.company-logo {
+    background-color: #16C79A;
+    width: 60px;
+    height: 30px;
+    color: #000000;
+    padding: 25px;
+    border-radius: 8px;
+}
+
+.company-details {
+    background-color: #ffffff;
+    width: 168vh;
+    height: 70vh;
+    color: #000000;
+    padding: 25px;
+    border-radius: 8px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+/*.add-border {
+    align-items: center;
+    border: 1px dashed #000;
+    border-radius: 50%;
+    display: flex;
+    fill: var(--color-icon);
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 33px;
+    justify-content: center;
+    margin-right: 8px;
+    width: 33px;
+}*/
 
 /* Modal Styles */

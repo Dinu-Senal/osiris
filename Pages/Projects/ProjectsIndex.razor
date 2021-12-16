@@ -10,7 +10,7 @@
         </div>
         <hr />
         <div class="col-5">
-            <button class="button btn-main" @onclick="() => OnOpenDialog()">Create Project</button>
+            <button class="button btn-main" @onclick="() => OnOpenProjectAddDialog()">Create Project</button>
         </div>
     </div>
 </div>
@@ -28,9 +28,9 @@ else
             <a class="nav-link oi oi-arrow-circle-right" href="/project/project-view/@project.ProjectId" />
         </div>
     }
-    @if (OpenDialog)
+    @if (OpenAddProjectDialog)
     {
-        <ProjectCreate OnClose="@(OnCancelDialog)" />
+        <ProjectCreate OnClose="@(AddProject)" />
     }
 }
 
@@ -48,19 +48,21 @@ else
     }
 
     /* Model Logic */
-    public Boolean OpenDialog { get; set; }
-    private void OnOpenDialog()
+
+    /* Project Modal Logic*/
+    /* Project Add Logic */
+    public Boolean OpenAddProjectDialog { get; set; }
+    private void OnOpenProjectAddDialog()
     {
-        OpenDialog = true;
-        StateHasChanged();
+        OpenAddProjectDialog = true;
     }
-    private async Task OnCancelDialog(Boolean accepted)
+    private async Task AddProject(Boolean accepted)
     {
         if (accepted)
         {
             await loadData();
         }
-        OpenDialog = false;
+        OpenAddProjectDialog = false;
         StateHasChanged();
     }
 }

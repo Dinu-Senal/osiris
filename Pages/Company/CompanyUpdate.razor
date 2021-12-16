@@ -2,11 +2,11 @@
 @inject CompanyService companyService
 @inject NavigationManager NavigationManager
 
-<div class="modal fade show" id="companyCreateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+<div class="modal fade show" id="companyEditModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Create New Company</h4>
+                <h4 class="modal-title">Company Details</h4>
             </div>
 
             <EditForm Model="companyObject" OnValidSubmit="@ModalOk">
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="button btn-main">Create</button>
+                    <button type="submit" class="button btn-main">Confirm</button>
                     <button type="button" class="btn-outlined" @onclick="@ModalCancel">Cancel</button>
                 </div>
             </EditForm>
@@ -35,16 +35,22 @@
 @code {
     [Parameter]
     public EventCallback<Boolean> OnClose { get; set; }
+    [Parameter]
+    public String RetrievedData { get; set; }
 
     Company companyObject = new Company();
 
+    protected override async Task OnInitializedAsync()
+    {
+        companyObject = await Task.Run(() => companyService.GetCompanyAsync(RetrievedData));
+    }
     private Task ModalCancel()
     {
         return OnClose.InvokeAsync(false);
     }
     private async Task ModalOk()
     {
-        var result = await companyService.AddCompanyAsync(companyObject);
+        await companyService.UpdateCompanyAsync(companyObject);
         await OnClose.InvokeAsync(true);
     }
 }

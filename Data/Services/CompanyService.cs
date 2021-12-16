@@ -36,9 +36,9 @@ namespace Osiris.Data.Services
         #endregion
 
         #region Get Company by Id
-        public async Task<Company> GetCompanyAsync(Guid Id)
+        public async Task<Company> GetCompanyAsync(String Id)
         {
-            Company company = await _applicationDbContext.Companies.FirstOrDefaultAsync(data => data.CompanyId.Equals(Id));
+            Company company = await _applicationDbContext.Companies.FirstOrDefaultAsync(data => data.CompanyId.ToString() == Id);
             return company;
         }
         #endregion
@@ -57,19 +57,6 @@ namespace Osiris.Data.Services
         {
             _applicationDbContext.Remove(company);
             await _applicationDbContext.SaveChangesAsync();
-            return true;
-        }
-        #endregion
-
-        #region Delete Ticket by Id
-        public async Task<bool> DeleteCompanyByIdAsync(Guid companyId)
-        {
-            var Company = _applicationDbContext.Companies.FirstOrDefault(data => data.CompanyId == companyId);
-            if (Company != null)
-            {
-                _applicationDbContext.Remove(Company);
-                await _applicationDbContext.SaveChangesAsync();
-            }
             return true;
         }
         #endregion
