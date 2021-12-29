@@ -1,7 +1,11 @@
-﻿@page "/project/project-view/{Id}/"
+﻿@page "/project/project-view/{ProjectId}/"
 @using Osiris.Data
 @inject ProjectService projectService
+@inject TicketService ticketService
+@inject UserService userService;
 @inject NavigationManager NavigationManager
+
+@inject IJSRuntime JS
 
 @if (isLoaded.Equals(false))
 {
@@ -10,48 +14,95 @@
 else
 {
     <h3>Project @projectObject.Name</h3>
+    <button type="button" class="btn-remove" @onclick="() => OnOpenProjectDeleteDialog()">Delete</button>
+    <button type="button" class="btn-outlined" @onclick="() => OnOpenProjectEditDialog()">Edit</button>
+    <a class="btn-outlined" href="/project/project-view/@projectObject.ProjectId/section-board">Section</a>
     <p>@projectObject.Description</p>
     <p>@projectObject.ProjectId</p>
 
-    <button type="button" class="btn-remove" @onclick="() => OnOpenDeleteDialog()">Delete</button>
-    <button type="button" class="btn-outlined" @onclick="() => OnOpenEditDialog()">Edit</button>
-    <a class="btn-outlined" href="/project/project-view/@projectObject.ProjectId/section-board">Section</a>
+    /* Getting Assigned Users for Tickets */
+    <div>Project Collaborators</div>
+    #region get assigned users
+    var assignedUserList = new List<string>();
+    foreach (var ticket in ticketListObj)
+    {
+        if (ticket.ProjectId.ToString().Equals(ProjectId))
+        {
+            assignedUserList.Add(ticket.AssignedUser);
+        }
+    }
+    foreach (var assignedUser in assignedUserList.Distinct())
+    {
+        foreach (var users in userListObj)
+        {
+            if (users.UserId.ToString().Equals(assignedUser))
+            {
+                <div>@users.Name</div>
+            }
+        }
+    }
+    #endregion
 
-    @if (OpenDeleteDialog)
+    if (OpenDeleteDialog)
     {
         <ModalDeleteDialog Title="Are you sure ?"
                            Text="@projectObject.Name"
                            ButtonName="Delete"
-                           OnClose="@OnProjectDeleteDialog" />
+                           OnClose="@DeleteProject" />
     }
-    @if (OpenUpdateDialog)
+    if (OpenUpdateDialog)
     {
-        <ProjectUpdate OnClose="@(OnCancelUpdateDialog)" RetrievedData="@projectObject.ProjectId.ToString()" />
+        <ProjectUpdate OnClose="@(UpdateProject)" RetrievedData="@projectObject.ProjectId.ToString()" />
     }
 }
 
 @code {
-    [Parameter]
-    public String Id { get; set; }
+    List<Ticket> ticketListObj;
+    List<User> userListObj;
+
+
+    User userObject = new User();
     Project projectObject = new Project();
+
+    [Parameter]
+    public String ProjectId { get; set; }
+
     Boolean isLoaded = false;
 
-    private async Task loadData()
+    private async Task loadProjectData()
     {
-        projectObject = await Task.Run(() => projectService.GetProjectAsync(Id));
+        projectObject = await Task.Run(() => projectService.GetProjectAsync(ProjectId));
+        StateHasChanged();
+    }
+    private async Task loadTicketData()
+    {
+        ticketListObj = await Task.Run(() => ticketService.GetAllTicketsAsync());
+        StateHasChanged();
+    }
+    private async Task loadUserData()
+    {
+        userListObj = await Task.Run(() => userService.GetAllUsersAsync());
         StateHasChanged();
     }
     protected override async Task OnInitializedAsync()
     {
-        await loadData();
+        await loadProjectData();
+        await loadTicketData();
+        await loadUserData();
         isLoaded = true;
     }
 
     /* Modal Logic */
 
-    /* Modal Project Deletion Logic */
+    /* Project Modal Logic */
+    /* Delete Project Logic */
     public Boolean OpenDeleteDialog { get; set; }
-    private async Task OnProjectDeleteDialog(Boolean accepted)
+    private void OnOpenProjectDeleteDialog()
+    {
+        OpenDeleteDialog = true;
+        StateHasChanged();
+    }
+    private async Task DeleteProject(Boolean accepted)
     {
         if (accepted)
         {
@@ -61,24 +112,19 @@ else
         OpenDeleteDialog = false;
         StateHasChanged();
     }
-    private void OnOpenDeleteDialog()
-    {
-        OpenDeleteDialog = true;
-        StateHasChanged();
-    }
 
-    /* Modal Project Update Logic */
+    /* Edit Project Logic */
     public Boolean OpenUpdateDialog { get; set; }
-    private void OnOpenEditDialog()
+    private void OnOpenProjectEditDialog()
     {
         OpenUpdateDialog = true;
         StateHasChanged();
     }
-    private async Task OnCancelUpdateDialog(Boolean accepted)
+    private async Task UpdateProject(Boolean accepted)
     {
         if (accepted)
         {
-            await loadData();
+            await loadProjectData();
         }
         OpenUpdateDialog = false;
         StateHasChanged();

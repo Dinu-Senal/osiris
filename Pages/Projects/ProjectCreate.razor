@@ -1,6 +1,7 @@
 ﻿@using Osiris.Data
 @inject ProjectService projectService
 @inject CompanyService companyService
+@inject UserService userService
 @inject NavigationManager NavigationManager
 
 @if (companyListObj is null)
@@ -10,9 +11,9 @@
 else if (companyListObj.Count == 0)
 {
     <div class="modal fade show" id="projectCreateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
-        <div class="error-card">
-            <div class="d-flex justify-content-center mb-5">
-                <div class="oi oi-x" />
+        <div class="notification-card">
+            <div class="d-flex justify-content-center mb-3">
+                <div class="oi oi-warning" />
             </div>   
             <div class="mb-3">Please add a company to insert project</div>
             <button class="button btn-main" @onclick="OnAddCompanyDialog">Company Page</button>
@@ -92,7 +93,6 @@ else
     {
         return OnClose.InvokeAsync(false);
     }
-
     private async Task ModalOk()
     {
         var result = await projectService.AddProjectAsync(projectObject);
@@ -101,6 +101,6 @@ else
 
     private void OnAddCompanyDialog()
     {
-        NavigationManager.NavigateTo("/Company");
+        NavigationManager.NavigateTo("/companies");
     }
 }

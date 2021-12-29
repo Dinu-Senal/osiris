@@ -13,13 +13,13 @@ namespace Osiris.Data
         [StringLength(50)]
         public String Name { get; set; }
 
+        [StringLength(130)]
         public String Description { get; set; }
         public String Status { get; set; }
 
         public Guid CompanyId { get; set; }
         public Company Company { get; set; }
-
-        public List<User> Users { get; set; }
+ 
         public List<Section> Sections { get; set; }
     }
 }

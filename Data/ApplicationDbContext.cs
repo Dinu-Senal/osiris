@@ -15,6 +15,8 @@ namespace Osiris.Data
             base.OnModelCreating(builder);
             builder.Entity<Project>().HasMany(p => p.Sections);
             builder.Entity<Section>().HasMany(p => p.Tickets);
+            builder.Entity<Company>().HasMany(p => p.Projects);
+            builder.Entity<Company>().HasMany(p => p.Users);
         }
 
         public DbSet<Company> Companies { get; set; }
