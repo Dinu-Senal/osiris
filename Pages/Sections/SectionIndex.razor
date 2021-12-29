@@ -2,6 +2,8 @@
 @using Osiris.Data
 @inject SectionService sectionService
 @inject TicketService ticketService
+@inject UserService userService
+@inject ProjectService projectService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @inject IJSRuntime jsRuntime
@@ -70,6 +72,7 @@ else
         }
     </div>
 
+    /* Section Sector */
     if (OpenAddSectionDialog)
     {
         #region Create Section
@@ -100,7 +103,6 @@ else
         </div>
         #endregion
     }
-
     if (OpenEditSectionDialog)
     {
         #region Edit Section
@@ -148,6 +150,7 @@ else
         </div>
         #endregion
     }
+    /* Ticket Sector */
     if (OpenAddTicketDialog)
     {
         #region Add Ticket
@@ -188,6 +191,20 @@ else
                                 <label for="EndingDate" class="control-label">Ending Date</label>
                                 <InputDate @bind-Value="ticketObject.EndDate"></InputDate>
                                 <ValidationMessage For="@(() => ticketObject.EndDate)" />
+                            </div>
+                            <div class="form-group">
+                                <label for="User" class="control-label">User</label>
+                                <InputSelect @bind-Value="@ticketObject.AssignedUser">
+                                    <option value="" selected disabled hidden>Assign User</option>
+                                    @foreach (var users in userListObj)
+                                            {
+                                                if (users.CompanyId.Equals(projectObject.CompanyId))
+                                                {
+                                                    <option value="@users.UserId.ToString()">@users.Name</option>
+                                                }
+                                            }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => ticketObject.AssignedUser)" />
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -240,6 +257,20 @@ else
                                 <InputDate @bind-Value="ticketObject.EndDate"></InputDate>
                                 <ValidationMessage For="@(() => ticketObject.EndDate)" />
                             </div>
+                            <div class="form-group">
+                                <label for="User" class="control-label">User</label>
+                                <InputSelect @bind-Value="@ticketObject.AssignedUser">
+                                    <option value="" selected disabled hidden>Assign User</option>
+                                    @foreach (var users in userListObj)
+                                            {
+                                                if (users.CompanyId.Equals(projectObject.CompanyId))
+                                                {
+                                                    <option value="@users.UserId.ToString()">@users.Name</option>
+                                                }
+                                            }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => ticketObject.AssignedUser)" />
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="button btn-main">Confirm</button>
@@ -275,8 +306,10 @@ else
 @code {
     List<Section> sectionListObj;
     List<Ticket> ticketListObj;
+    List<User> userListObj;
     Section sectionObject = new Section();
     Ticket ticketObject = new Ticket();
+    Project projectObject = new Project();
 
     [Parameter]
     public Guid ProjectId { get; set; }
@@ -291,10 +324,23 @@ else
         ticketListObj = await Task.Run(() => ticketService.GetAllTicketsAsync());
         StateHasChanged();
     }
+    private async Task loadAssignedUsers()
+    {
+        userListObj = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+    private async Task loadProjectData()
+    {
+        projectObject = await Task.Run(() => projectService.GetProjectAsync(ProjectId.ToString()));
+        StateHasChanged();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await loadSectionData();
         await loadTicketData();
+        await loadAssignedUsers();
+        await loadProjectData();
     }
 
     /* Modal Logic */
@@ -373,6 +419,7 @@ else
     private async Task AddTicket()
     {
         ticketObject.SectionId = SectionId;
+        ticketObject.ProjectId = ProjectId;
         await ticketService.AddTicketAsync(ticketObject);
         OpenAddTicketDialog = false;
         await loadTicketData();

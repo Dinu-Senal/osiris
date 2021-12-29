@@ -194,6 +194,14 @@ a, .btn-link {
     color: #16C79A;
 }
 
+.oi-trash {
+    color: #F06A6A;
+}
+
+.oi-trash:hover {
+    color: #E94D4D;
+}
+
 /* Ticket */
 .ticket-container {
     overflow-x: hidden;
@@ -261,6 +269,12 @@ a, .btn-link {
     border-radius: 8px;
     overflow-x: hidden;
     overflow-y: scroll;
+}
+
+.company-users-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 /*.add-border {

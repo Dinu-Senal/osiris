@@ -47,12 +47,18 @@ else
             {
                 if (users.CompanyId == companyObject.CompanyId)
                 {
-                    <div>@users.Name</div>
+                    <div class="container">
+                        <div class="row mb-2">
+                            <div class="col-2">@users.Name</div>
+                            <div class="col-1 company-users-name oi oi-trash" @onclick="() => OnOpenUserDeleteDialog(users.UserId)" />
+                        </div>
+                    </div>
                 }
             }
         }
     </div>
 
+    /* Delete Company */
     @if (OpenDeleteCompanyDialog)
     {
         <ModalDeleteDialog Title="Are you sure ?"
@@ -60,10 +66,12 @@ else
                            ButtonName="Delete"
                            OnClose="@DeleteCompany" />
     }
+    /* Edit Company */
     @if (OpenEditCompanyDialog)
     {
         <CompanyUpdate OnClose="@(EditCompany)" RetrievedData="@companyObject.CompanyId.ToString()" />
     }
+    /* Add User */
     @if (OpenAddUserDialog)
     {
         #region Add User
@@ -71,7 +79,7 @@ else
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">User Add</h4>
+                        <h4 class="modal-title">Add User</h4>
                     </div>
 
                     <EditForm Model="userObject" OnValidSubmit="@AddUser">
@@ -95,7 +103,7 @@ else
 
                         <div class="modal-footer">
                             <button type="submit" class="button btn-main">Add</button>
-                            <button type="button" class="btn-outlined" @onclick="@OnCancelTicketEditDialog">Cancel</button>
+                            <button type="button" class="btn-outlined" @onclick="@OnCancelUserAddDialog">Cancel</button>
                         </div>
                     </EditForm>
                 </div>
@@ -103,8 +111,10 @@ else
         </div>
         #endregion
     }
+    /* User Invitation */
     @if (InvitationSendSuccess)
     {
+        #region User Invitation
         <div class="modal fade show" id="invitationModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
             <div class="notification-card">
                 <div class="d-flex justify-content-center mb-3">
@@ -114,6 +124,15 @@ else
                 <button class="button btn-main" @onclick="OnInvitationMessage">Back</button>
             </div>
         </div>
+        #endregion
+    }
+    /* Delete User */
+    @if (OpenDeleteUserDialog)
+    {
+        <ModalDeleteDialog Title="Are you sure ?"
+                           Text="Deleting the user will cause to unassign the user from the project"
+                           ButtonName="Delete"
+                           OnClose="@DeleteUser" />
     }
 }
 
@@ -121,6 +140,7 @@ else
 @code {
     [Parameter]
     public String CompanyId { get; set; }
+    public Guid UserId { get; set; }
 
     List<Company> companyListObj;
     List<User> userListObj;
@@ -191,25 +211,45 @@ else
         userObject = new User();
         OpenAddUserDialog = true;
     }
-    private void OnCancelTicketEditDialog()
+    private void OnCancelUserAddDialog()
     {
         OpenAddUserDialog = false;
     }
-    private void OnInvitationMessage()
-    {
-        InvitationSendSuccess = false;
-    }
     private async Task AddUser()
     {
+
         userObject.CompanyId = companyObject.CompanyId;
         if (userObject.Designation == "Admin")
         {
             userObject.Type = true;
         }
         await userService.AddUserAsync(userObject);
-        OpenAddUserDialog = false;
         await loadUserData();
+        OpenAddUserDialog = false;
         StateHasChanged();
         InvitationSendSuccess = true;
+    }
+    private void OnInvitationMessage()
+    {
+        InvitationSendSuccess = false;
+    }
+
+    /* User Delete Logic */
+    private Boolean OpenDeleteUserDialog { get; set; }
+    private void OnOpenUserDeleteDialog(Guid userId)
+    {
+        UserId = userId;
+        OpenDeleteUserDialog = true;
+    }
+    private async Task DeleteUser(Boolean accepted)
+    {
+        if (accepted)
+        {
+            userObject = await userService.GetUserAsync(UserId.ToString());
+            await userService.DeleteUserAsync(userObject);
+            await loadUserData();
+        }
+        OpenDeleteUserDialog = false;
+        StateHasChanged();
     }
 }

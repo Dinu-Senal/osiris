@@ -35,9 +35,9 @@ namespace Osiris.Data.Services
         #endregion
 
         #region Get User by Id
-        public async Task<User> GetUserAsync(Guid Id)
+        public async Task<User> GetUserAsync(String Id)
         {
-            User user = await _applicationDbContext.User.FirstOrDefaultAsync(data => data.UserId.Equals(Id));
+            User user = await _applicationDbContext.User.FirstOrDefaultAsync(data => data.UserId.ToString() == Id);
             return user;
         }
         #endregion

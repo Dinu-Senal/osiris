@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Osiris.Migrations
 {
-    public partial class migrationversion1 : Migration
+    public partial class migrationversion01 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,8 +51,8 @@ namespace Osiris.Migrations
                 columns: table => new
                 {
                     CompanyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(130)", maxLength: 130, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -170,8 +170,8 @@ namespace Osiris.Migrations
                 columns: table => new
                 {
                     ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(130)", maxLength: 130, nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CompanyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -187,11 +187,32 @@ namespace Osiris.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Designation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<bool>(type: "bit", nullable: false),
+                    CompanyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_User_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "CompanyId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sections",
                 columns: table => new
                 {
                     SectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -210,11 +231,13 @@ namespace Osiris.Migrations
                 columns: table => new
                 {
                     TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(130)", maxLength: 130, nullable: true),
+                    AssignedUser = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -225,57 +248,6 @@ namespace Osiris.Migrations
                         column: x => x.SectionId,
                         principalTable: "Sections",
                         principalColumn: "SectionId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<bool>(type: "bit", nullable: false),
-                    CompanyId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_User_Companies_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "Companies",
-                        principalColumn: "CompanyId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_User_Tickets_TicketId",
-                        column: x => x.TicketId,
-                        principalTable: "Tickets",
-                        principalColumn: "TicketId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProjectUser",
-                columns: table => new
-                {
-                    ProjectsProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UsersUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProjectUser", x => new { x.ProjectsProjectId, x.UsersUserId });
-                    table.ForeignKey(
-                        name: "FK_ProjectUser_Projects_ProjectsProjectId",
-                        column: x => x.ProjectsProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProjectUser_User_UsersUserId",
-                        column: x => x.UsersUserId,
-                        principalTable: "User",
-                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -324,11 +296,6 @@ namespace Osiris.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectUser_UsersUserId",
-                table: "ProjectUser",
-                column: "UsersUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sections_ProjectId",
                 table: "Sections",
                 column: "ProjectId");
@@ -342,11 +309,6 @@ namespace Osiris.Migrations
                 name: "IX_User_CompanyId",
                 table: "User",
                 column: "CompanyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_User_TicketId",
-                table: "User",
-                column: "TicketId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -367,19 +329,16 @@ namespace Osiris.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ProjectUser");
+                name: "Tickets");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "User");
-
-            migrationBuilder.DropTable(
-                name: "Tickets");
 
             migrationBuilder.DropTable(
                 name: "Sections");

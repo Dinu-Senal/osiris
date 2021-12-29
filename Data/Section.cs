@@ -10,6 +10,7 @@ namespace Osiris.Data
         public Guid SectionId { get; set; }
 
         [Required]
+        [StringLength(50)]
         public String Name { get; set; }
 
         public Guid ProjectId { get; set; }

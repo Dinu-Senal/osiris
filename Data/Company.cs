@@ -10,8 +10,10 @@ namespace Osiris.Data
         public Guid CompanyId { get; set; }
 
         [Required]
+        [StringLength(50)]
         public String Name { get; set; }
 
+        [StringLength(130)]
         public String Description { get; set; }
 
         public List<Project> Projects { get; set; }
