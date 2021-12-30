@@ -1,9 +1,10 @@
 ﻿@page "/companies"
 @using Osiris.Data;
 @inject CompanyService companyService
+@inject UserService userService
 @inject NavigationManager NavigationManager
 
-<div class="container pl-0">
+<div class="container mb-4 pl-0">
     <div class="row">
         <div class="col-6">
             <h3>Companies</h3>
@@ -20,17 +21,37 @@
 }
 else
 {
-    @foreach (var company in companyListObj)
-    {
-        <div class="osiris-card mt-3">
-            <div class="container">
-                <div class="row">
-                    <div class="col-7 text-center text-uppercase">@company.Name</div>
-                    <a class="col-1 oi oi-external-link mr-2 h4" href="/company/company-view/@company.CompanyId" />
+    <div class="osiris-primary-card">
+        <div class="container">
+            <div class="div-center-container row">
+                @foreach (var company in companyListObj)
+                {
+                <div class="osiris-card m-3" @onclick="() => NavigateToCompany(company.CompanyId)">
+                    <div class="text-capitalize mb-3" style="font-weight: 700; font-size: 20px">@company.Name</div>
+                    @if (userListObj is null)
+                    {
+                        <LoadingSpinner />
+                    }
+                    else
+                    {
+                        var userCount = 0;
+                        @foreach (var users in userListObj)
+                        {
+                            if (users.CompanyId == company.CompanyId)
+                            {
+                                userCount++;
+                            }
+                        }
+                        <div class="add-border" style="display: inline">
+                            <div class="oi oi-person" style="color: #fff"></div>
+                        </div>
+                        <div style="font-weight: 700; display : inline">@userCount</div>
+                    }
                 </div>
+                }
             </div>
         </div>
-    }
+    </div>
     @if (OpenAddCompanyDialog)
     {
         <CompanyCreate OnClose="@(AddCompany)" />
@@ -39,16 +60,28 @@ else
 
 @code {
     List<Company> companyListObj;
+    List<User> userListObj;
     Company companyObject = new Company();
 
-    private async Task loadData()
+    private async Task loadUserData()
+    {
+        userListObj = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+    private async Task loadCompanyData()
     {
         companyListObj = await Task.Run(() => companyService.GetAllCompaniesAsync());
         StateHasChanged();
     }
     protected override async Task OnInitializedAsync()
     {
-        await loadData();
+        await loadCompanyData();
+        await loadUserData();
+    }
+
+    private void NavigateToCompany(Guid companyId)
+    {
+        NavigationManager.NavigateTo($"/company/company-view/{companyId}");
     }
 
     /* Modal Logic */
@@ -64,7 +97,7 @@ else
     {
         if (accepted)
         {
-            await loadData();
+            await loadCompanyData();
         }
         OpenAddCompanyDialog = false;
         StateHasChanged();

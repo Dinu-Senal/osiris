@@ -2,11 +2,18 @@
 
 html, body {
     font-family: 'Montserrat', sans-serif;
-    background: #edeae9;
+    background: #F5F5F6;
 }
 
 a, .btn-link {
     color: #16C79A;
+}
+a:hover{
+    text-decoration: none;
+}
+
+h3 {
+    font-weight: 700;
 }
 
 .button:hover {
@@ -95,10 +102,36 @@ a, .btn-link {
 /* card */
 .osiris-card {
     width: 18rem;
-    background-color: #151B26;
+    min-height: 26vh;
+    background-color: #0F0E17;
     color: #ffffff;
     padding: 25px;
     border-radius: 20px;
+    transition: background-color .3s;
+}
+.osiris-card:hover {
+    background-color: #fff;
+    color: #000;
+    border: 2px #0F0E17 solid;
+    cursor: pointer;
+}
+.osiris-card:hover > .add-border {
+    border: 2px solid #000;
+    background-color: #0F0E17;
+}
+
+.osiris-primary-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    width: 168vh;
+    padding: 25px;
+    height: 70vh;
+    overflow-y: scroll;
+}
+
+.div-center-container {
+    display: flex;
+    justify-content: center;
 }
 
 .loading-container {
@@ -244,8 +277,14 @@ a, .btn-link {
     text-align: center;
 }
 
-/* Company Styles */
+/* Project Styles */
+.project-company-container {
+    background-color: #0F0E17;
+    border-radius: 8px;
+    color: #fff;
+}
 
+/* Company Styles */
 .company-title {
     font-size: 30px;
     font-weight: 600;
@@ -260,7 +299,7 @@ a, .btn-link {
     border-radius: 8px;
 }
 
-.company-details {
+.company-details-card {
     background-color: #ffffff;
     width: 168vh;
     height: 70vh;
@@ -277,18 +316,17 @@ a, .btn-link {
     white-space: nowrap;
 }
 
-/*.add-border {
+.add-border {
     align-items: center;
-    border: 1px dashed #000;
+    border: 2px solid #fff;
     border-radius: 50%;
-    display: flex;
     fill: var(--color-icon);
     flex-grow: 0;
     flex-shrink: 0;
     height: 33px;
     justify-content: center;
     margin-right: 8px;
-    width: 33px;
-}*/
+    padding: 8px;
+}
 
 /* Modal Styles */
