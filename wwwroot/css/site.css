@@ -16,6 +16,29 @@ h3 {
     font-weight: 700;
 }
 
+/* Table Style */
+table {
+    width: 100%;
+    table-layout: fixed;
+    min-height: 26vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    overflow: hidden;
+}
+tr {
+    transition: background-color .1s;
+}
+tr:not(:first-child):hover {
+    background-color: #D5E9E4;
+    color: white;
+    cursor: pointer;
+}
+
 .button:hover {
     background-color: #16B990;
     color: #ffffff;
@@ -45,7 +68,7 @@ h3 {
 }
 
 .btn-outlined:hover {
-        background-color: #D5E9E4;
+    background-color: #D5E9E4;
 }
 
 .btn-remove {
@@ -127,6 +150,12 @@ h3 {
     padding: 25px;
     height: 70vh;
     overflow-y: scroll;
+}
+
+.osiris-secondary-card {
+    background-color: #0F0E17;
+    border-radius: 8px;
+    color: #fff;
 }
 
 .div-center-container {
