@@ -22,41 +22,45 @@
 }
 else
 {
-<div class="container">
-    @foreach (var project in projectListObj)
-    {
-    <div class="osiris-card mb-3" @onclick="() => NaviagateToProject(project.ProjectId)">
-        <div class="text-capitalize mb-3" style="font-weight: 700; font-size: 20px">@project.Name</div>
-        @if (project.Status.Equals("Complete"))
-        {
-            <div class="mr-2" style="display: inline">Complete</div>
-            <div class="oi oi-circle-check" style="color: #16C79A; font-size: 20px; display: inline"></div>
-        }
-        else
-        {
-            <div class="mr-2" style="display: inline">Incomplete</div>
-            <div class="sx oi oi-circle-check" style="display: inline; font-size: 20px;"></div>
-        }
-        @if (companyListObj is null)
-        {
-            <LoadingSpinner />
-        }
-        else
-        {
-            foreach (var company in companyListObj)
-            {
-                @if (company.CompanyId.Equals(project.CompanyId))
+    <div class="osiris-primary-border-card">
+        <div class="container">
+            <div class="div-center-container row">
+                @foreach (var project in projectListObj)
                 {
-                    <div class="project-company-container mt-3 p-2">
-                        <div class="mx-3 oi oi-grid-two-up" style="display: inline; color: #fff;"></div>
-                        <div style="display: inline">@company.Name</div>
+                    <div class="osiris-project-card m-2" @onclick="() => NaviagateToProject(project.ProjectId)">
+                        <div class="text-capitalize mb-3" style="font-weight: 700; font-size: 20px">@project.Name</div>
+                        @if (project.Status.Equals("Complete"))
+                        {
+                            <div class="mr-2" style="display: inline">Complete</div>
+                            <div class="oi oi-circle-check" style="color: #16C79A; font-size: 20px; display: inline"></div>
+                        }
+                        else
+                        {
+                            <div class="mr-2" style="display: inline">Incomplete</div>
+                            <div class="sx oi oi-circle-check" style="display: inline; font-size: 20px;"></div>
+                        }
+                        @if (companyListObj is null)
+                        {
+                            <LoadingSpinner />
+                        }
+                        else
+                        {
+                            foreach (var company in companyListObj)
+                            {
+                                @if (company.CompanyId.Equals(project.CompanyId))
+                                {
+                                    <div class="project-company-container mt-3 p-2">
+                                        <div class="mx-3 oi oi-grid-two-up" style="display: inline; color: #fff;"></div>
+                                        <div style="display: inline">@company.Name</div>
+                                    </div>
+                                }
+                            }
+                        }
                     </div>
                 }
-            }
-        }
+            </div>
+        </div>
     </div>
-    }
-</div>
     @if (OpenAddProjectDialog)
     {
         <ProjectCreate OnClose="@(AddProject)" />

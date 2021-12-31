@@ -26,28 +26,28 @@ else
             <div class="div-center-container row">
                 @foreach (var company in companyListObj)
                 {
-                <div class="osiris-card m-3" @onclick="() => NavigateToCompany(company.CompanyId)">
-                    <div class="text-capitalize mb-3" style="font-weight: 700; font-size: 20px">@company.Name</div>
-                    @if (userListObj is null)
-                    {
-                        <LoadingSpinner />
-                    }
-                    else
-                    {
-                        var userCount = 0;
-                        @foreach (var users in userListObj)
+                    <div class="osiris-card m-3" @onclick="() => NavigateToCompany(company.CompanyId)">
+                        <div class="text-capitalize mb-3" style="font-weight: 700; font-size: 20px">@company.Name</div>
+                        @if (userListObj is null)
                         {
-                            if (users.CompanyId == company.CompanyId)
-                            {
-                                userCount++;
-                            }
+                            <LoadingSpinner />
                         }
-                        <div class="add-border" style="display: inline">
-                            <div class="oi oi-person" style="color: #fff"></div>
-                        </div>
-                        <div style="font-weight: 700; display : inline">@userCount</div>
-                    }
-                </div>
+                        else
+                        {
+                            var userCount = 0;
+                            @foreach (var users in userListObj)
+                            {
+                                if (users.CompanyId == company.CompanyId)
+                                {
+                                    userCount++;
+                                }
+                            }
+                            <div class="add-border" style="display: inline">
+                                <div class="oi oi-person" style="color: #fff"></div>
+                            </div>
+                            <div style="font-weight: 700; display : inline">@userCount</div>
+                        }
+                    </div>
                 }
             </div>
         </div>
