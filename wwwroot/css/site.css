@@ -328,6 +328,7 @@ tr:not(:first-child):hover {
 .project-company-container {
     background-color: #0F0E17;
     border-radius: 8px;
+    border: 1px solid #fff;
     color: #fff;
 }
 
@@ -357,6 +358,18 @@ tr:not(:first-child):hover {
     overflow-y: scroll;
 }
 
+.company-report-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
+    transition: background-color .1s;
+}
+
+.company-report-card:hover {
+    border: 1px solid #000;
+}
+
 .company-users-name {
     text-overflow: ellipsis;
     overflow: hidden;
@@ -374,6 +387,29 @@ tr:not(:first-child):hover {
     justify-content: center;
     margin-right: 8px;
     padding: 8px;
+}
+
+/* ticket styles */
+.ticket-report-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
+    transition: background-color .1s;
+}
+.ticket-report-card:hover {
+    border: 1px solid #16C79A;
+}
+
+/* back button */
+.back-button-container {
+    border: 2px solid #000;
+    background-color: black;
+    border-radius: 25%;
+    margin-right: 25px;
+    padding: 5px;
+    cursor: pointer;
+}
 }
 
 /* Modal Styles */

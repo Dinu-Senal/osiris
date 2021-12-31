@@ -3,7 +3,12 @@
 @inject ProjectService projectService
 @inject NavigationManager NavigationManager
 
-<h3>@CompanyName - Report</h3>
+<div class="mb-5">
+    <div class="back-button-container" style="display: inline">
+        <div class="oi oi-chevron-left" @onclick="GoBack" style="color: #fff;" />
+    </div>
+    <h3 style="display: inline">@CompanyName Company - Project Report</h3>
+</div>
 
 @if (projectListObj is null)
 {
@@ -11,11 +16,10 @@
 }
 else
 {
-    <div class="my-4">
+    <div class="mb-4">
         <div class="row">
             <div class="col-3">
-                <label for="Status" class="control-label">Status</label>
-                <select @bind="projectFilter">
+                <select class="custom-select" @bind="projectFilter">
                     <option value="All" selected>All</option>
                     <option value="Complete">Complete</option>
                     <option value="Incomplete">Incomplete</option>
@@ -24,26 +28,38 @@ else
             <div class="col-4">
                 <button class="btn-main" @onclick="filterByStatus">Filter</button>
             </div>
-            <button class="btn-main" @onclick="GoBack">GO Back</button>
         </div>
     </div>
-    <table>
-        <tr>
-            <th>Project Name</th>
-            <th>Description</th>
-        </tr>
+
+    <div class="osiris-secondary-card-heading p-2 mb-2">
+        <div class="row">
+            <div class="col">
+                Project Name
+            </div>
+            <div class="col">
+                Description
+            </div>
+        </div>
+    </div>
+
+    <div class="container-scroll mb-3">
         @foreach (var project in projectListObj)
-        {
             @if (project.CompanyId.ToString().Equals(CompanyId))
             {
-                <tr @onclick="() => OpenTicketReport(project.Name, project.ProjectId)">
-                    <td>@project.Name</td>
-                    <td>@project.Description</td>
-                </tr>
+                <div class="company-report-card p-3 my-1">
+                    <div class="row" @onclick="() => OpenTicketReport(project.Name, project.ProjectId)">
+                        <div class="oi oi-folder px-3" style="color: black"></div>
+                        <div class="col">
+                            @project.Name
+                        </div>
+                        <div class="col">
+                            @project.Description
+                        </div>
+                    </div>
+                </div>
             }
-        }
-    </table>
-}
+        </div>
+    }
 
 @code {
     [Parameter]
