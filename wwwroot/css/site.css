@@ -29,6 +29,7 @@ td, th {
     text-align: left;
     padding: 8px;
     overflow: hidden;
+    height: 50px;
 }
 tr {
     transition: background-color .1s;

@@ -1,8 +1,87 @@
-﻿@page "/report/company-report/{CompanyId}/";
+﻿@page "/report/company-report/{CompanyName}/{CompanyId}/"
+@using Osiris.Data
+@inject ProjectService projectService
+@inject NavigationManager NavigationManager
 
-<h3>Company Report</h3>
+<h3>@CompanyName - Report</h3>
+
+@if (projectListObj is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <div class="my-4">
+        <div class="row">
+            <div class="col-3">
+                <label for="Status" class="control-label">Status</label>
+                <select @bind="projectFilter">
+                    <option value="All" selected>All</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Incomplete">Incomplete</option>
+                </select>
+            </div>
+            <div class="col-4">
+                <button class="btn-main" @onclick="filterByStatus">Filter</button>
+            </div>
+            <button class="btn-main" @onclick="GoBack">GO Back</button>
+        </div>
+    </div>
+    <table>
+        <tr>
+            <th>Project Name</th>
+            <th>Description</th>
+        </tr>
+        @foreach (var project in projectListObj)
+        {
+            @if (project.CompanyId.ToString().Equals(CompanyId))
+            {
+                <tr @onclick="() => OpenTicketReport(project.Name, project.ProjectId)">
+                    <td>@project.Name</td>
+                    <td>@project.Description</td>
+                </tr>
+            }
+        }
+    </table>
+}
 
 @code {
     [Parameter]
     public String CompanyId { get; set; }
+    [Parameter]
+    public String CompanyName { get; set; }
+
+    List<Project> projectListObj;
+    private String projectFilter = "All";
+
+    private async Task loadData()
+    {
+        projectListObj = await Task.Run(() => projectService.GetAllProjectsAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+    }
+
+    private async Task filterByStatus()
+    {
+        if (projectFilter.Equals("All"))
+        {
+            projectListObj = await Task.Run(() => projectService.GetAllProjectsAsync());
+        }
+        else
+        {
+            projectListObj = await Task.Run(() => projectService.FilterProject(projectFilter));
+        }
+        StateHasChanged();
+    }
+    private void OpenTicketReport(String projectName, Guid projectId)
+    {
+        NavigationManager.NavigateTo($"/report/company-report/{CompanyName}/{CompanyId}/ticket-report/{projectName}/{projectId}");
+    }
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/report");
+    }
 }
