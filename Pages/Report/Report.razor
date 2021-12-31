@@ -21,19 +21,33 @@ else
             </div>
         </div>
     </div>
-    <table>
-        <tr>
-            <th>Company Name</th>
-            <th>Description</th>
-        </tr>
+
+    <div class="osiris-secondary-card-heading p-2 mb-2">
+        <div class="row">
+            <div class="col">
+                Company Name
+            </div>
+            <div class="col">
+                Company Name
+            </div>
+        </div>
+    </div>
+
+    <div class="container-scroll mb-3">
         @foreach (var company in companyListObj)
         {
-            <tr @onclick="() => OpenProjectReport(company.Name, company.CompanyId)">
-                <td>@company.Name</td>
-                <td>@company.Description</td>
-            </tr>
+            <div class="osiris-secondary-card p-3 my-1">
+                <div class="row" @onclick="() => OpenProjectReport(company.Name, company.CompanyId)">
+                    <div class="col">
+                        @company.Name
+                    </div>
+                    <div class="col">
+                        @company.Description
+                    </div>
+                </div>
+            </div>
         }
-    </table>
+    </div>
 }
 
 

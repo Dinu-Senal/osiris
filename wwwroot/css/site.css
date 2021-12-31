@@ -152,11 +152,28 @@ tr:not(:first-child):hover {
     height: 70vh;
     overflow-y: scroll;
 }
-
-.osiris-secondary-card {
-    background-color: #0F0E17;
+.osiris-secondary-card-heading {
+    background-color: #ffffff;
     border-radius: 8px;
+    color: #000;
+    font-weight: 700;
+}
+.osiris-secondary-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
+    transition: background-color .1s;
+}
+.osiris-secondary-card:hover {
+    background-color: #16C79A;
     color: #fff;
+}
+
+.container-scroll {
+    height: 57vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .div-center-container {
