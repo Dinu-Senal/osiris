@@ -1,0 +1,63 @@
+﻿@page "/report"
+@using Osiris.Data
+@inject CompanyService companyService
+@inject NavigationManager NavigationManager
+
+<h3>Report</h3>
+
+@if (companyListObj is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <div class="my-4">
+        <div class="row">
+            <div class="col">
+                <input class="form-control" type="text" placeholder="search company" @bind="companyFilter" />
+            </div>
+            <div class="col">
+                <button class="btn-main" @onclick="searchCompany">Search</button>
+            </div>
+        </div>
+    </div>
+    <table>
+        <tr>
+            <th>Company Name</th>
+            <th>Description</th>
+        </tr>
+        @foreach (var company in companyListObj)
+        {
+            <tr @onclick="() => OpenProjectReport(company.Name, company.CompanyId)">
+                <td>@company.Name</td>
+                <td>@company.Description</td>
+            </tr>
+        }
+    </table>
+}
+
+
+@code {
+    List<Company> companyListObj;
+    private String companyFilter = String.Empty;
+
+    private async Task loadData()
+    {
+        companyListObj = await Task.Run(() => companyService.GetAllCompaniesAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+    }
+
+    private async void searchCompany()
+    {
+        companyListObj = await Task.Run(() => companyService.SearchCompany(companyFilter));
+        StateHasChanged();
+    }
+    private void OpenProjectReport(String companyName, Guid companyId)
+    {
+        NavigationManager.NavigateTo($"/report/company-report/{companyName}/{companyId}");
+    }
+}

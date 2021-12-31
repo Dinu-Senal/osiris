@@ -65,5 +65,35 @@ namespace Osiris.Data.Services
             return true;
         }
         #endregion
+
+        #region Filter Tickets
+        public async Task<List<Ticket>> FilterTickets(String ticketFilter, String startDate)
+        {
+           
+            String defaultDate = DateTime.MinValue.ToString("MM/dd/yyyy");
+            var castedTicketList = _applicationDbContext.Tickets.AsEnumerable();
+
+            var FitleredTicketList = await _applicationDbContext.Tickets.ToListAsync();
+
+            if (!ticketFilter.Equals("All") && defaultDate.Equals(startDate))
+            {
+                FitleredTicketList = castedTicketList.Where(data => data.Status.ToLower().Equals(ticketFilter.ToLower())
+                                                            ).ToList();
+            }
+            else if (ticketFilter.Equals("All") && !defaultDate.Equals(startDate))
+            {
+                FitleredTicketList = castedTicketList.Where(data => data.StartDate.ToString("MM/dd/yyyy").Equals(startDate)
+                                                               ).ToList();
+            }
+            else if (!ticketFilter.Equals("All") && !defaultDate.Equals(startDate))
+            {
+                FitleredTicketList = castedTicketList.Where(data => data.Status.ToLower().Equals(ticketFilter.ToLower()) && 
+                                                                    data.StartDate.ToString("MM/dd/yyyy").Equals(startDate)
+                                                               ).ToList();
+            }
+
+            return FitleredTicketList;
+        }
+        #endregion
     }
 }

@@ -1,0 +1,87 @@
+﻿@page "/report/company-report/{CompanyName}/{CompanyId}/ticket-report/{ProjectName}/{ProjectId}"
+@using Osiris.Data
+@inject TicketService ticketService
+@inject NavigationManager NavigationManager
+
+<h3>@ProjectName - Ticket Report</h3>
+
+@if (ticketListObj is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+
+    <form>
+        <label for="Status" class="control-label">Status</label>
+        <select @bind="ticketStatusFilter">
+            <option value="All" selected>All</option>
+            <option value="Complete">Complete</option>
+            <option value="Incomplete">Incomplete</option>
+        </select>
+
+        <input type="date" @bind="@ticketStartDateFilter" />
+        <button @onclick="filterByStatus" type="button">Filter</button>
+        <button @onclick="ResetDate" type="button">Reset</button>
+    </form>
+
+    <table>
+        <tr>
+            <th>Ticket Name</th>
+            <th>Description</th>
+        </tr>
+        @foreach (var ticket in ticketListObj)
+        {
+            if (ticket.ProjectId.ToString().Equals(ProjectId))
+            {
+                <tr>
+                    <td>@ticket.Name</td>
+                    <td>@ticket.Description</td>
+                </tr>
+            }
+        }
+    </table>
+    <button class="btn-main" @onclick="GoBack">GO Back</button>
+}
+
+@code {
+    [Parameter]
+    public String CompanyId { get; set; }
+    [Parameter]
+    public String CompanyName { get; set; }
+    [Parameter]
+    public String ProjectId { get; set; }
+    [Parameter]
+    public String ProjectName { get; set; }
+
+    List<Ticket> ticketListObj;
+    private String ticketStatusFilter = "All";
+    private DateTime ticketStartDateFilter = DateTime.MinValue;
+
+    private async Task loadData()
+    {
+        ticketListObj = await Task.Run(() => ticketService.GetAllTicketsAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+    }
+
+    private async Task filterByStatus()
+    {
+        String convertedStartDate = ticketStartDateFilter.ToString("MM/dd/yyyy");
+        ticketListObj = await Task.Run(() => ticketService.FilterTickets(ticketStatusFilter, convertedStartDate));
+        StateHasChanged();
+    }
+    private async void ResetDate()
+    {
+        ticketStartDateFilter = DateTime.MinValue;
+        ticketStatusFilter = "All";
+        await loadData();
+    }
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/report/company-report/{CompanyName}/{CompanyId}/");
+    }
+}
