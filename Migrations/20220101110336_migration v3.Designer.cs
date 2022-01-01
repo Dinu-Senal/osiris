@@ -10,8 +10,8 @@ using Osiris.Data;
 namespace Osiris.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211231084710_migration v1")]
-    partial class migrationv1
+    [Migration("20220101110336_migration v3")]
+    partial class migrationv3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -254,10 +254,16 @@ namespace Osiris.Migrations
                         .HasMaxLength(130)
                         .HasColumnType("nvarchar(130)");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");

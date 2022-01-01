@@ -193,6 +193,29 @@ tr:not(:first-child):hover {
     cursor: pointer;
 }
 
+.osiris-prediction-card-primary {
+    background-color: #0F0E17;
+    color: #fff;
+    border-radius: 8px;
+    padding: 25px;
+    height: 40vh;
+    overflow-y: scroll;
+}
+.osiris-prediction-card-secondary {
+    border: 1px solid #16C79A;
+    color: #fff;
+    border-radius: 25px;
+    padding: 10px;
+}
+.one-side-indicator {
+    align-items: center;
+    background-color: #16C79A;
+    justify-content: center;
+    margin-right: 8px;
+    height: 45px;
+    width: 7px;
+}
+
 .container-scroll {
     height: 57vh;
     overflow-y: scroll;
@@ -399,6 +422,29 @@ tr:not(:first-child):hover {
     white-space: nowrap;
 }
 
+.osiris-prediction-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 25px;
+    height: 75vh;
+}
+.osiris-estimation-card {
+    background-color: #ffffff;
+    box-shadow: 0px 2px 2px 2px rgb(0 0 0 / 20%);
+    border-radius: 8px;
+    padding: 25px;
+}
+.estimated-value {
+    align-items: center;
+    border: 2px solid #0F0E17;
+    border-radius: 15px;
+    background-color: #0F0E17;
+    color: #fff;
+    justify-content: center;
+    padding: 10px;
+    margin-top: 10px;
+}
+
 .add-border {
     align-items: center;
     border: 2px solid #fff;
@@ -433,6 +479,11 @@ tr:not(:first-child):hover {
     padding: 5px;
     cursor: pointer;
 }
+
+.estimation-pie-chart {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%
 }
 
 /* Modal Styles */
