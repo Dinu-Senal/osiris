@@ -1,7 +1,9 @@
 ﻿@page "/report/company-report/{CompanyName}/{CompanyId}/"
 @using Osiris.Data
 @inject ProjectService projectService
+@inject TicketService ticketService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
 
 <div class="mb-5">
     <div class="back-button-container" style="display: inline">
@@ -16,6 +18,115 @@
 }
 else
 {
+    /* Company Users Prediction */
+    #region Users Prediction
+    <div class="row mb-4">
+        <div class="col-8">
+            <div class="osiris-prediction-card">
+                <div class="row mb-4">
+                    <div class="col-4">
+                        <label>Starting Date</label>
+                        <input class="form-control" type="date" @bind="@projectStartingDateFilter" />
+                    </div>
+                    <div class="col-4">
+                        <label>Ending Date</label>
+                        <input class="form-control" type="date" @bind="@projectEndingDateFilter" />
+                    </div>
+                    <div class="col" style="padding-top: 31px">
+                        <button class="btn-main mx-3" @onclick="predictProject">Predict</button>
+                        <button class="btn-outlined" @onclick="resetPrediction">Reset</button>
+                    </div>
+                </div>
+
+                @if (projectPredictionListObj is null)
+                {
+                    <LoadingSpinner />
+                }
+                else
+                {
+                    projectCount = 0;
+                    assignedUserCount = 0;
+                    <div class="osiris-prediction-card-primary mb-4">
+                        <div class="text-center" 
+                             style="font-weight: 400; font-size: 18px; 
+                                    text-transform: uppercase;"
+                        >
+                                @FilterOrNot
+                        </div>
+                        @foreach (var project in projectPredictionListObj)
+                        {
+                            if (project.CompanyId.ToString().Equals(CompanyId))
+                            {
+                                projectCount++;
+                                <div class="osiris-prediction-card-secondary my-3 p-3">
+                                    <div>Name: @project.Name</div>
+                                    <div>Started Date : @project.StartDate.ToString("MM/dd/yyyy")</div>
+                                    <div>Ending Date : @project.EndDate.ToString("MM/dd/yyyy")</div>
+                                    @if (ticketListObj is null)
+                                    {
+                                        <LoadingSpinner />
+                                    }
+                                    else
+                                    {
+                                        foreach (var ticket in ticketListObj)
+                                        {
+                                            if (ticket.ProjectId.Equals(project.ProjectId))
+                                            {
+                                                <div>@ticket.Name</div>
+                                                assignedUserCount++;
+                                            }
+                                        }
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="div-center-container row px-3">
+                        <div class="one-side-indicator" />
+                        <label>Project Collaborators</label>
+                        <div class="mx-4" style="font-weight: 700;">@assignedUserCount</div>
+                        <div class="one-side-indicator ml-4" />
+                        <label>Project Count</label>
+                        <div class="mx-4" style="font-weight: 700;">@projectCount</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col">
+            <div class="osiris-prediction-card">
+                <h5 class="mb-4">@CompanyName Prediction</h5>
+                <div class="osiris-estimation-card my-4">
+                    @if (showPrediction.Equals(true))
+                    {
+                        if (@assignedUserCount > 0 && @projectCount > 0)
+                        {
+                            double estimatedUsers = (double)projectCount / (double)assignedUserCount;
+                            estimateUsersInInt = Convert.ToInt16(estimatedUsers);
+                            <div class="">
+                                Estimated Users From @projectStartingDateFilter.ToString("MM/dd/yyyy") to @projectEndingDateFilter.ToString("MM/dd/yyyy")
+                            </div>
+                            <div class="estimated-value text-center" style="font-weight: 700;">@estimateUsersInInt</div>
+                        }
+                        else
+                        {
+                            <div>Can't predict because number of users or projects are zero</div>
+                        }
+                    }
+                    else
+                    {
+                        <div>No Predictions Initialized</div>
+                    }
+                </div>
+                <div class="div-center-container">
+                    <div class="estimation-pie-chart" style="background-image: conic-gradient(#16C79A @estimateUsersInInt%, #28908F 0)" />
+                </div>
+            </div>
+        </div>
+    </div>
+    #endregion
+
+    /* Project Filter - Report */
+    #region Project Filter Section
     <div class="mb-4">
         <div class="row">
             <div class="col-3">
@@ -58,8 +169,9 @@ else
                     </div>
                 </div>
             }
-        </div>
-    }
+    </div>
+    #endregion
+}
 
 @code {
     [Parameter]
@@ -67,16 +179,46 @@ else
     [Parameter]
     public String CompanyName { get; set; }
 
+    private String FilterOrNot = "All Projects";
+    private Int16 estimateUsersInInt;
+    private Int16 projectCount;
+    private Int16 assignedUserCount;
+    private Boolean showPrediction = false;
+
     List<Project> projectListObj;
+    List<Project> projectPredictionListObj;
+    List<Ticket> ticketListObj;
+
     private String projectFilter = "All";
+    private DateTime projectStartingDateFilter = DateTime.MinValue;
+    private DateTime projectEndingDateFilter = DateTime.MinValue;
 
     private async Task loadData()
     {
         projectListObj = await Task.Run(() => projectService.GetAllProjectsAsync());
+        projectPredictionListObj = await Task.Run(() => projectService.GetAllProjectsAsync());
+        ticketListObj = await Task.Run(() => ticketService.GetAllTicketsAsync());
         StateHasChanged();
     }
     protected override async Task OnInitializedAsync()
     {
+        await loadData();
+    }
+
+    private async void predictProject()
+    {
+        projectPredictionListObj = await Task.Run(() => projectService.FilterProjectByDates(projectStartingDateFilter, projectEndingDateFilter));
+        FilterOrNot = "Filtered Projects";
+        showPrediction = true;
+        StateHasChanged();
+    }
+    private async void resetPrediction()
+    {
+        projectStartingDateFilter = DateTime.MinValue;
+        projectEndingDateFilter = DateTime.MinValue;
+        FilterOrNot = "All Projects";
+        showPrediction = false;
+        estimateUsersInInt = 0;
         await loadData();
     }
 

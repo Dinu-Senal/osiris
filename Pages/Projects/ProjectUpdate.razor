@@ -37,6 +37,11 @@ else
                             </InputSelect>
                         </div>
                         <div class="form-group">
+                            <label for="EndingDate" class="control-label">Ending Date</label>
+                            <InputDate @bind-Value="projectObject.EndDate"></InputDate>
+                            <ValidationMessage For="@(() => projectObject.EndDate)" />
+                        </div>
+                        <div class="form-group">
                             <label for="Company" class="control-label">Company</label>
                             <InputSelect @bind-Value="@projectObject.CompanyId" required>
                                 @foreach (var company in companyListObj)

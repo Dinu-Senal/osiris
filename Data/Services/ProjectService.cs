@@ -69,5 +69,14 @@ namespace Osiris.Data.Services
             return FitleredProjectList;
         }
         #endregion
+
+        #region Filter Project by End Date & Start Date
+        public async Task<List<Project>> FilterProjectByDates(DateTime startDate, DateTime endDate)
+        {
+            var castedProjectList = _applicationDbContext.Projects.AsEnumerable();
+            var FitleredProjectListByDates = castedProjectList.Where(data => data.StartDate >= startDate && data.EndDate <= endDate).ToList();
+            return FitleredProjectListByDates;
+        }
+        #endregion
     }
 }

@@ -16,6 +16,8 @@ namespace Osiris.Data
         [StringLength(130)]
         public String Description { get; set; }
         public String Status { get; set; }
+        public DateTime EndDate { get; set; } = DateTime.Now;
+        public DateTime StartDate { get; set; } = DateTime.Now;
 
         public Guid CompanyId { get; set; }
         public Company Company { get; set; }
