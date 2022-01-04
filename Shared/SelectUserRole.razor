@@ -1,0 +1,74 @@
+﻿@page "/user-role"
+@inject NavigationManager NavigationManager
+
+<div class="div-center-container">
+    <div class="register-card-container">
+        <h3 class="mb-3">Select User Role</h3>
+        <select class="form-control mb-3" @bind="userRole">
+            <option value="default" selected disabled>Select User Role</option>
+            <option value="admin">Admin</option>
+            <option value="collaborator">Collaborator</option>
+        </select>
+        <button @onclick="onSelectUserRole"  class="button btn-main">Submit</button>
+    </div>
+</div>
+
+@if (authenticatedUser)
+{
+    if (userRole.Equals("default"))
+    {
+        errorModalPop = true;
+    }
+    else
+    {
+        if (userRole.Equals("admin"))
+        {
+            NavigationManager.NavigateTo($"/register-user/{userRole}");
+        }
+        else if (userRole.Equals("collaborator"))
+        {
+            NavigationManager.NavigateTo($"/register-user/{userRole}");
+        }
+    }
+
+}
+
+@if (errorModalPop)
+{
+    #region error modal
+    <div class="modal fade show" id="userRoleErrorModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Registration Error</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="oi oi-warning" />
+                    </div>
+                    <p class="text-center">Please select a user role</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="button btn-main" @onclick="@onErrorCancel">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    #endregion
+}
+
+@code {
+    private String userRole = "default";
+    private Boolean errorModalPop = false;
+    private Boolean authenticatedUser = false;
+
+    private void onErrorCancel()
+    {
+        errorModalPop = false;
+        authenticatedUser = false;
+    }
+    private void onSelectUserRole()
+    {
+        authenticatedUser = true;
+    }
+}

@@ -1,12 +1,153 @@
-﻿<AuthorizeView>
-    <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>
-        <form method="post" action="Identity/Account/LogOut">
-            <button type="submit" class="nav-link btn btn-link">Log out</button>
-        </form>
-    </Authorized>
-    <NotAuthorized>
-        <a href="Identity/Account/Register">Register</a>
-        <a href="Identity/Account/Login">Log in</a>
-    </NotAuthorized>
-</AuthorizeView>
+﻿@page "/"
+@using Osiris.Data
+@inject UserService userService
+@inject CompanyService companyService
+@inject NavigationManager NavigationManager
+
+<div class="div-center-container">
+    <div class="register-card-container">
+        <div class="row mb-3">
+            <div class="col">
+                <h3>Login</h3>
+            </div>
+        </div>
+        @if (companyListObj is null)
+        {
+            <LoadingSpinner />
+        }
+        else
+        {
+            if (authorized)
+            {
+                <div class="form mb-4">
+                    <label>Enter Email</label>
+                    <input class="form-control" type="text" placeholder="Enter Email" @bind="userEmail" />
+
+                    <label>Select Password</label>
+                    <input class="form-control" type="text" placeholder="Enter Password" @bind="userPassword" />
+                </div>
+
+                <div class="div-center-container row">
+                    <button class="btn-main" @onclick="() => Login()">
+                        Login
+                    </button>
+                </div>
+            }
+            else
+            {
+                @if (companyListObj.Count.Equals(0))
+                {
+                    <div class="modal fade show" id="companyNotExistModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Login Error</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <div class="oi oi-warning" />
+                                    </div>
+                                    <p class="text-center">There is no company registered to the system</p>
+                                    <div class="text-center">Please register a company first to login into the system</div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="button btn-main" @onclick="@onRegisterCompany">Register</button>
+                                    <button type="button" class="button btn-outlined" @onclick="@onCancelRegister">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (userNotExist)
+                {
+                    <div class="modal fade show" id="userNotExistModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Login Error</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="d-flex justify-content-center mb-3">
+                                        <div class="oi oi-warning" />
+                                    </div>
+                                    <p class="text-center">Incorrect username or password</p>
+                                    <div class="text-center">Please check again or register a new user</div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="button btn-main" @onclick="@onRegisterUser">Register</button>
+                                    <button type="button" class="button btn-outlined" @onclick="@onCancelRegister">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] public App MyApp { get; set; }
+    User userObject = new User();
+    List<Company> companyListObj;
+    List<User> userListObj;
+
+    private String userEmail = String.Empty;
+    private String userPassword = String.Empty;
+    private Boolean authorized = true;
+    private Boolean userNotExist = true;
+
+    private async Task loadCompanyData()
+    {
+        companyListObj = await Task.Run(() => companyService.GetAllCompaniesAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadCompanyData();
+    }
+
+    private async void Login()
+    {
+        userListObj = await Task.Run(() => userService.FindUser(userEmail, userPassword));
+        if (userListObj.Count.Equals(0))
+        {
+            authorized = false;
+        }
+        else
+        {
+            userObject = await Task.Run(() => userService.GetUserByEmailAsync(userEmail));
+            LoginInitialized();
+        }
+        StateHasChanged();
+    }
+    private void LoginInitialized()
+    {
+        @if (userObject.Designation.Equals("Admin"))
+        {
+            NavigationManager.NavigateTo("/home");
+            MyApp.SetLayout(typeof(AdminView));
+        }
+        else if (userObject.Designation.Equals("Collaborator"))
+        {
+            NavigationManager.NavigateTo("/home");
+            MyApp.SetLayout(typeof(CollaboratorView));
+        }
+    }
+
+    private void onRegisterCompany()
+    {
+        NavigationManager.NavigateTo("/register-company");
+    }
+
+    private void onRegisterUser()
+    {
+        userNotExist = false;
+        NavigationManager.NavigateTo("/user-role");
+    }
+
+    private void onCancelRegister()
+    {
+        authorized = true;
+    }
+}

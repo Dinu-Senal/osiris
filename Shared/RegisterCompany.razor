@@ -1,0 +1,100 @@
+﻿@page "/register-company"
+@using Osiris.Data
+@inject CompanyService companyService
+@inject NavigationManager NavigationManager
+
+<div class="div-center-container">
+    @if (companyListObj is null)
+    {
+        <LoadingSpinner />
+    }
+    else
+    {
+        <div class="register-card-container">
+            <div class="row mb-3">
+                <div class="col">
+                    <h3>Register Company</h3>
+                </div>
+                <div class="col">
+                    <button type="button" class="button btn-outlined" @onclick="BackToLogin">Back to Login</button>
+                    <button type="button" class="button btn-outlined" @onclick="BackToRegisterUser">Back to Register User</button>
+                </div>
+            </div>
+            <EditForm Model="companyObject" OnValidSubmit="@CreateUser">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="Name" class="control-label">Name</label>
+                    <InputText @bind-Value="companyObject.Name"></InputText>
+                    <ValidationMessage For="@(() => companyObject.Name)" />
+                </div>
+                <div class="form-group">
+                    <label for="Description" class="control-label">Description</label>
+                    <InputText @bind-Value="@companyObject.Description"></InputText>
+                </div>
+                <button type="submit" class="button btn-main">Create</button>
+            </EditForm>
+            @if (notPriviledged)
+            {
+                <div class="modal fade show" id="userRegisterErrorModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Registration Error</h4>
+                            </div>
+                            <div class="modal-body">
+                                First you must register a company
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="button btn-outlined" @onclick="@onCancelUserRegister">Ok</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    Company companyObject = new Company();
+    List<Company> companyListObj;
+    private Boolean notPriviledged = false;
+
+    private async Task loadCompanyData()
+    {
+        companyListObj = await Task.Run(() => companyService.GetAllCompaniesAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadCompanyData();
+    }
+
+    private async void CreateUser()
+    {
+        await companyService.AddCompanyAsync(companyObject);
+        NavigationManager.NavigateTo("register-user");
+    }
+
+    private void BackToLogin()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+    private void BackToRegisterUser()
+    {
+        if (companyListObj.Count.Equals(0))
+        {
+            notPriviledged = true;
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/register-user/admin");
+        }
+    }
+
+    private void onCancelUserRegister()
+    {
+        notPriviledged = false;
+        NavigationManager.NavigateTo("/register-company");
+    }
+}

@@ -1,7 +1,14 @@
-﻿@page "/"
+﻿@page "/home"
+@inject NavigationManager NavigationManager
 
-<h1>Welcome to Osiris!</h1>
+<button class="btn btn-secondary" @onclick="() => ButtonClick(typeof(MainLayout))">Login Page</button>
 
-Welcome to your new app.
+@code {
+    [CascadingParameter] public App MyApp { get; set; }
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    void ButtonClick(Type layoutType)
+    {
+        NavigationManager.NavigateTo("/");
+        MyApp.SetLayout(layoutType);
+    }
+}
