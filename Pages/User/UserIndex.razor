@@ -1,7 +1,8 @@
-﻿@page "/user"
+﻿@page "/user/{UserRole}"
 
 <h3>User</h3>
 
 @code {
-
+    [Parameter]
+    public String UserRole { get; set; }
 }

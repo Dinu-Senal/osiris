@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Osiris.Data
+@inject UserLoginData _UserLoginData
 @inject UserService userService
 @inject CompanyService companyService
 @inject NavigationManager NavigationManager
@@ -23,8 +24,8 @@
                     <label>Enter Email</label>
                     <input class="form-control" type="text" placeholder="Enter Email" @bind="userEmail" />
 
-                    <label>Select Password</label>
-                    <input class="form-control" type="text" placeholder="Enter Password" @bind="userPassword" />
+                    <label>Enter Password</label>
+                    <input class="form-control" type="password" placeholder="Enter Password" @bind="userPassword" />
                 </div>
 
                 <div class="div-center-container row">
@@ -93,6 +94,7 @@
     List<User> userListObj;
 
     private String userEmail = String.Empty;
+    private String userId = String.Empty;
     private String userPassword = String.Empty;
     private Boolean authorized = true;
     private Boolean userNotExist = true;
@@ -125,12 +127,16 @@
     {
         @if (userObject.Designation.Equals("Admin"))
         {
-            NavigationManager.NavigateTo("/home");
+            userId = userObject.UserId.ToString();
+            _UserLoginData.RetrievedUserId = userId;
+            NavigationManager.NavigateTo($"/user/admin/?id={userId}");
             MyApp.SetLayout(typeof(AdminView));
         }
         else if (userObject.Designation.Equals("Collaborator"))
         {
-            NavigationManager.NavigateTo("/home");
+            userId = userObject.UserId.ToString();
+            _UserLoginData.RetrievedUserId = userId;
+            NavigationManager.NavigateTo($"/user/collaborator/?id={userId}");
             MyApp.SetLayout(typeof(CollaboratorView));
         }
     }

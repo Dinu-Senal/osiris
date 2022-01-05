@@ -1,9 +1,11 @@
 ﻿@page "/CollaboratorView"
+@using Osiris.Data
 @inherits LayoutComponentBase
+@inject UserLoginData _UserLoginData
 
 <div class="page">
     <div class="sidebar">
-        <CollabNavMenu />
+        <CollabNavMenu UserRole="collaborator" UserId="@userId" />
     </div>
     <div class="main">
         <div class="content px-4">
@@ -13,5 +15,9 @@
 </div>
 
 @code {
-
+    private String userId;
+    protected override async Task OnInitializedAsync()
+    {
+        userId = _UserLoginData.RetrievedUserId;
+    }
 }

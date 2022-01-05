@@ -1,8 +1,10 @@
+@inject IJSRuntime jsRuntime
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
         <Found Context="routeData">
             <CascadingValue Value="this">
-                <RouteView RouteData="@routeData" DefaultLayout="this.LayoutType" />
+                <RouteView RouteData="@routeData" DefaultLayout="LayoutType" />
             </CascadingValue>
         </Found>
         <NotFound>
@@ -15,12 +17,11 @@
 
 @code {
     private Type LayoutType = typeof(MainLayout);
-
     public void SetLayout(Type layout)
     {
         if (layout != LayoutType)
         {
-            this.LayoutType = layout;
+            LayoutType = layout;
             StateHasChanged();
         }
     }

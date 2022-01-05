@@ -73,7 +73,7 @@
     private async void CreateUser()
     {
         await companyService.AddCompanyAsync(companyObject);
-        NavigationManager.NavigateTo("register-user");
+        NavigationManager.NavigateTo("/user-role");
     }
 
     private void BackToLogin()

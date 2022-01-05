@@ -1,5 +1,6 @@
 ﻿@page "/register-user/{UserRole}"
 @using Osiris.Data
+@inject UserLoginData _UserLoginData
 @inject UserService userService
 @inject CompanyService companyService
 @inject NavigationManager NavigationManager
@@ -50,14 +51,15 @@ else
                     <label for="Designation" class="control-label">User Type</label>
                     <InputSelect @bind-Value="@userObject.Designation">
                         @if (UserRole.Equals("admin"))
-                         {
+                            {
                             <option value="" selected disabled hidden>Choose User Type</option>
                             <option value="Admin">Admin</option>
-                         }
-                         else if (UserRole.Equals("collaborator")) {
+                            }
+                            else if (UserRole.Equals("collaborator"))
+                            {
                             <option value="" selected disabled hidden>Choose User Type</option>
                             <option value="Collaborator">Collaborator</option>
-                         }
+                            }
                     </InputSelect>
                     <ValidationMessage For="@(() => userObject.Designation)" />
                 </div>
@@ -105,8 +107,9 @@ else
     List<Company> companyListObj;
 
     [Parameter]
-    public String UserRole {get; set; }
+    public String UserRole { get; set; }
 
+    private String userId = String.Empty;
     private Boolean notPrivileged = false;
     private Boolean loginInitialized = false;
 
@@ -130,23 +133,28 @@ else
     {
         @if (userObject.Designation.Equals("Admin"))
         {
-            NavigationManager.NavigateTo("/home");
+            userId = userObject.UserId.ToString();
+            _UserLoginData.RetrievedUserId = userId;
+            NavigationManager.NavigateTo($"/user/admin/?id={userId}");
             MyApp.SetLayout(typeof(AdminView));
         }
         else if (userObject.Designation.Equals("Collaborator"))
         {
-            NavigationManager.NavigateTo("/home");
+            userId = userObject.UserId.ToString();
+            _UserLoginData.RetrievedUserId = userId;
+            NavigationManager.NavigateTo($"/user/collaborator/?id={userId}");
             MyApp.SetLayout(typeof(CollaboratorView));
         }
     }
     private async void CreateUser()
     {
         var emailDuplicate = userListObj.FirstOrDefault(data => data.Email == userObject.Email);
-        if(emailDuplicate is null)
+        if (emailDuplicate is null)
         {
             await userService.AddUserAsync(userObject);
             LoginInitialized();
-        } else
+        }
+        else
         {
             notPrivileged = true;
         }
