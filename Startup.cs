@@ -50,6 +50,7 @@ namespace Osiris
             services.AddScoped<ProjectService>();
             services.AddScoped<SectionService>();
             services.AddScoped<TicketService>();
+            services.AddScoped<UserLoginData>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

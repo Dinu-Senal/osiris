@@ -10,8 +10,8 @@ using Osiris.Data;
 namespace Osiris.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220101110336_migration v3")]
-    partial class migrationv3
+    [Migration("20220105130116_migration version 01")]
+    partial class migrationversion01
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -350,10 +350,18 @@ namespace Osiris.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Type")
                         .HasColumnType("bit");

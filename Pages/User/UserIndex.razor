@@ -1,7 +1,85 @@
-﻿@page "/user"
+﻿@page "/user/{UserRole}/{UserId}"
+@using Osiris.Data
+@inject UserService userService
+@inject NavigationManager NavigationManager
 
-<h3>User</h3>
+<h3>@UserRole</h3>
+<h3>@UserId</h3>
+<p>@userObject.Name</p>
+<p>@userObject.Email</p>
+<p>@userObject.Password</p>
+<button class="btn-main" @onclick="UpdateUser">Update User Details</button>
+
+@if (userUpdate)
+{
+    #region user update modal
+    <div class="modal fade show" id="userUpdateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Update User Information</h4>
+                </div>
+
+                <EditForm Model="userObject" OnValidSubmit="@onUpdateUser">
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <div class="form-group">
+                            <label for="Name" class="control-label">Name</label>
+                            <InputText @bind-Value="userObject.Name"></InputText>
+                            <ValidationMessage For="@(() => userObject.Name)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Password" class="control-label">Password</label>
+                            <InputText type="password" @bind-Value="@userObject.Password"></InputText>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="button btn-main">Update</button>
+                        <button type="button" class="btn-outlined" @onclick="@UpdateCancel">Cancel</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+    #endregion
+}
 
 @code {
+    [Parameter]
+    public String UserRole { get; set; }
+    [Parameter]
+    public String UserId { get; set; }
 
+    List<User> userListObj;
+    User userObject = new User();
+
+    private Boolean userUpdate = false;
+
+    private async Task loadUserData()
+    {
+        userObject = await Task.Run(() => userService.GetUserAsync(UserId));
+        userListObj = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadUserData();
+    }
+
+    private void UpdateUser()
+    {
+        userUpdate = true;
+    }
+    private async void onUpdateUser()
+    {
+        userUpdate = false;
+        await userService.UpdateUserAsync(userObject);
+        await loadUserData();
+        StateHasChanged();
+    }
+    private void UpdateCancel()
+    {
+        userUpdate = false;
+    }
 }

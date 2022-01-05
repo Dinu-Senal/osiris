@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,6 +58,24 @@ namespace Osiris.Data.Services
             _applicationDbContext.Remove(user);
             await _applicationDbContext.SaveChangesAsync();
             return true;
+        }
+        #endregion
+
+        #region Get User by Email
+        public async Task<User> GetUserByEmailAsync(String Email)
+        {
+            User user = await _applicationDbContext.User.FirstOrDefaultAsync(data => data.Email.Equals(Email));
+            return user;
+        }
+        #endregion
+
+        #region Find User by Email and Password
+        public async Task<List<User>> FindUser(String Email, String Password)
+        {
+            var castedUserList = _applicationDbContext.User.AsEnumerable();
+            var FitleredUserList = castedUserList.Where(data => data.Email.Equals(Email) && data.Password.Equals(Password)
+                                                           ).ToList();
+            return FitleredUserList;
         }
         #endregion
     }
