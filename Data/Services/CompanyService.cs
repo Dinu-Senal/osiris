@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Osiris.Data.Services
@@ -58,6 +59,15 @@ namespace Osiris.Data.Services
             _applicationDbContext.Remove(company);
             await _applicationDbContext.SaveChangesAsync();
             return true;
+        }
+        #endregion
+
+        #region SearchCompany
+        public async Task<List<Company>> SearchCompany(String companyFilter)
+        {
+            var castedCompanyList = _applicationDbContext.Companies.AsEnumerable();
+            var FitleredCompanyList = castedCompanyList.Where(data => data.Name.ToLower().Contains(companyFilter.ToLower())).ToList();
+            return FitleredCompanyList;
         }
         #endregion
     }

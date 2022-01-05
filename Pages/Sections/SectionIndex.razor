@@ -1,4 +1,4 @@
-﻿@page  "/project/project-view/{ProjectId:guid}/section-board"
+﻿@page  "/projects/{UserRole}/{UserId}/project-view/{ProjectId:guid}/section-board"
 @using Osiris.Data
 @inject SectionService sectionService
 @inject TicketService ticketService
@@ -16,7 +16,10 @@ else
 {
     <div class="section-title">
         <h3 class="mr-3">Manage Your Tickets</h3>
-        <button type="button" class="button btn-main mb-3" @onclick="() => OnOpenSectionAddDialog(true)">Add Section</button>
+        @if(UserRole.Equals("admin"))
+        {
+            <button type="button" class="button btn-main mb-3" @onclick="() => OnOpenSectionAddDialog(true)">Add Section</button>
+        } 
     </div>
     <div class="scrollmenu">
         @foreach (var sect in sectionListObj)
@@ -28,9 +31,12 @@ else
                         <div class="container">
                             <div class="row mb-3">
                                 <div class="col-6 p-0">@sect.Name</div>
-                                <div class="col-2 oi oi-plus" @onclick="() => OnOpenTicketAddDialog(sect.SectionId)"></div>
-                                <div class="col-2 oi oi-pencil" @onclick="() => OnOpenSectionEditDialog(sect.SectionId)"></div>
-                                <div class="col-2 oi oi-delete" @onclick="() => OnOpenSectionDeleteDialog(sect.SectionId)"></div>
+                                @if (UserRole.Equals("admin"))
+                                {
+                                    <div class="col-2 oi oi-plus" @onclick="() => OnOpenTicketAddDialog(sect.SectionId)"></div>
+                                    <div class="col-2 oi oi-pencil" @onclick="() => OnOpenSectionEditDialog(sect.SectionId)"></div>
+                                    <div class="col-2 oi oi-delete" @onclick="() => OnOpenSectionDeleteDialog(sect.SectionId)"></div>
+                                }
                             </div>
                         </div>
                         @if (ticketListObj is null)
@@ -50,7 +56,7 @@ else
                                                 <div class="row">
                                                     @if (tick.Status == "Complete")
                                                     {
-                                                        <div class="oi oi-circle-check"  style="color: #16C79A" />
+                                                        <div class="oi oi-circle-check" style="color: #16C79A" />
                                                     }
                                                     else
                                                     {
@@ -58,7 +64,10 @@ else
                                                     }
                                                     <div class="col-6 ticket-title">@tick.Name</div>
                                                     <div class="col-1 oi oi-external-link mr-2" @onclick="() => OnOpenTicketEditDialog(tick.TicketId)"></div>
-                                                    <div class="col-1 oi oi-circle-x" @onclick="() => OnOpenTicketDeleteDialog(tick.TicketId)"></div>
+                                                    @if (UserRole.Equals("admin"))
+                                                    {
+                                                        <div class="col-1 oi oi-circle-x" @onclick="() => OnOpenTicketDeleteDialog(tick.TicketId)"></div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -229,15 +238,18 @@ else
                     <EditForm Model="ticketObject" OnValidSubmit="@EditTicket">
                         <div class="modal-body">
                             <DataAnnotationsValidator />
-                            <div class="form-group">
-                                <label for="Name" class="control-label">Name</label>
-                                <InputText @bind-Value="ticketObject.Name"></InputText>
-                                <ValidationMessage For="@(() => ticketObject.Name)" />
-                            </div>
-                            <div class="form-group">
-                                <label for="Description" class="control-label">Description</label>
-                                <InputText @bind-Value="@ticketObject.Description"></InputText>
-                            </div>
+                            @if (UserRole.Equals("admin"))
+                            {
+                                <div class="form-group">
+                                    <label for="Name" class="control-label">Name</label>
+                                    <InputText @bind-Value="ticketObject.Name"></InputText>
+                                    <ValidationMessage For="@(() => ticketObject.Name)" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="Description" class="control-label">Description</label>
+                                    <InputText @bind-Value="@ticketObject.Description"></InputText>
+                                </div>
+                            }
                             <div class="form-group">
                                 <label for="Status" class="control-label">Status</label>
                                 <InputSelect @bind-Value="@ticketObject.Status">
@@ -262,12 +274,12 @@ else
                                 <InputSelect @bind-Value="@ticketObject.AssignedUser">
                                     <option value="" selected disabled hidden>Assign User</option>
                                     @foreach (var users in userListObj)
-                                            {
-                                                if (users.CompanyId.Equals(projectObject.CompanyId))
                                                 {
-                                                    <option value="@users.UserId.ToString()">@users.Name</option>
+                                                    if (users.CompanyId.Equals(projectObject.CompanyId))
+                                                    {
+                                            <option value="@users.UserId.ToString()">@users.Name</option>
+                                                    }
                                                 }
-                                            }
                                 </InputSelect>
                                 <ValidationMessage For="@(() => ticketObject.AssignedUser)" />
                             </div>
@@ -313,6 +325,10 @@ else
 
     [Parameter]
     public Guid ProjectId { get; set; }
+    [Parameter]
+    public String UserRole { get; set; }
+    [Parameter]
+    public String UserId { get; set; }
 
     private async Task loadSectionData()
     {

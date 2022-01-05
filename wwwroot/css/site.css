@@ -2,11 +2,42 @@
 
 html, body {
     font-family: 'Montserrat', sans-serif;
-    background: #edeae9;
+    background: #F5F5F6;
 }
 
 a, .btn-link {
     color: #16C79A;
+}
+a:hover{
+    text-decoration: none;
+}
+
+h3 {
+    font-weight: 700;
+}
+
+/* Table Style */
+table {
+    width: 100%;
+    table-layout: fixed;
+    min-height: 26vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    overflow: hidden;
+    height: 50px;
+}
+tr {
+    transition: background-color .1s;
+}
+tr:not(:first-child):hover {
+    background-color: #D5E9E4;
+    color: white;
+    cursor: pointer;
 }
 
 .button:hover {
@@ -38,7 +69,7 @@ a, .btn-link {
 }
 
 .btn-outlined:hover {
-        background-color: #D5E9E4;
+    background-color: #D5E9E4;
 }
 
 .btn-remove {
@@ -95,10 +126,105 @@ a, .btn-link {
 /* card */
 .osiris-card {
     width: 18rem;
-    background-color: #151B26;
+    min-height: 26vh;
+    background-color: #0F0E17;
     color: #ffffff;
     padding: 25px;
     border-radius: 20px;
+    transition: background-color .3s;
+}
+.osiris-card:hover {
+    background-color: #fff;
+    color: #000;
+    border: 2px #0F0E17 solid;
+    cursor: pointer;
+}
+.osiris-card:hover > .add-border {
+    border: 2px solid #000;
+    background-color: #0F0E17;
+}
+
+.osiris-primary-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    width: 168vh;
+    padding: 25px;
+    height: 70vh;
+    overflow-y: scroll;
+}
+.osiris-secondary-card-heading {
+    background-color: #ffffff;
+    border-radius: 8px;
+    color: #000;
+    font-weight: 700;
+}
+.osiris-secondary-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
+    transition: background-color .1s;
+}
+.osiris-secondary-card:hover {
+    background-color: #16C79A;
+    color: #fff;
+}
+.osiris-primary-border-card {
+    border: 2px solid #0F0E17;
+    border-radius: 8px;
+    width: 168vh;
+    padding: 25px;
+    height: 70vh;
+    overflow-y: scroll;
+}
+.osiris-project-card {
+    width: 18rem;
+    min-height: 26vh;
+    background-color: #0F0E17;
+    color: #ffffff;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    transition: background-color .3s;
+}
+.osiris-project-card:hover {
+    background-color: #fff;
+    color: #000;
+    cursor: pointer;
+}
+
+.osiris-prediction-card-primary {
+    background-color: #0F0E17;
+    color: #fff;
+    border-radius: 8px;
+    padding: 25px;
+    height: 40vh;
+    overflow-y: scroll;
+}
+.osiris-prediction-card-secondary {
+    border: 1px solid #16C79A;
+    color: #fff;
+    border-radius: 25px;
+    padding: 10px;
+}
+.one-side-indicator {
+    align-items: center;
+    background-color: #16C79A;
+    justify-content: center;
+    margin-right: 8px;
+    height: 45px;
+    width: 7px;
+}
+
+.container-scroll {
+    height: 57vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.div-center-container {
+    display: flex;
+    justify-content: center;
 }
 
 .loading-container {
@@ -244,8 +370,15 @@ a, .btn-link {
     text-align: center;
 }
 
-/* Company Styles */
+/* Project Styles */
+.project-company-container {
+    background-color: #0F0E17;
+    border-radius: 8px;
+    border: 1px solid #fff;
+    color: #fff;
+}
 
+/* Company Styles */
 .company-title {
     font-size: 30px;
     font-weight: 600;
@@ -260,7 +393,7 @@ a, .btn-link {
     border-radius: 8px;
 }
 
-.company-details {
+.company-details-card {
     background-color: #ffffff;
     width: 168vh;
     height: 70vh;
@@ -271,24 +404,109 @@ a, .btn-link {
     overflow-y: scroll;
 }
 
+.company-report-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
+    transition: background-color .1s;
+}
+
+.company-report-card:hover {
+    border: 1px solid #000;
+}
+
 .company-users-name {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
 }
 
-/*.add-border {
+.company-users-card {
+    background-color: #0F0E17;
+    color: #fff;
+    border-radius: 8px;
+    padding: 25px;
+    height: 50vh;
+    overflow-y: scroll;
+}
+
+.company-users-secondary-card {
+    background-color: #000;
+    box-shadow: 0px 2px 2px 2px rgb(0 0 0 / 20%);
+    border-radius: 8px;
+    padding: 25px;
+}
+
+.osiris-prediction-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 25px;
+    height: 75vh;
+}
+.osiris-estimation-card {
+    background-color: #ffffff;
+    box-shadow: 0px 2px 2px 2px rgb(0 0 0 / 20%);
+    border-radius: 8px;
+    padding: 25px;
+}
+.estimated-value {
     align-items: center;
-    border: 1px dashed #000;
+    border: 2px solid #0F0E17;
+    border-radius: 15px;
+    background-color: #0F0E17;
+    color: #fff;
+    justify-content: center;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.add-border {
+    align-items: center;
+    border: 2px solid #fff;
     border-radius: 50%;
-    display: flex;
     fill: var(--color-icon);
     flex-grow: 0;
     flex-shrink: 0;
     height: 33px;
     justify-content: center;
     margin-right: 8px;
-    width: 33px;
-}*/
+    padding: 8px;
+}
 
-/* Modal Styles */
+/* ticket styles */
+.ticket-report-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    color: #000;
+    cursor: pointer;
+    transition: background-color .1s;
+}
+.ticket-report-card:hover {
+    border: 1px solid #16C79A;
+}
+
+/* back button */
+.back-button-container {
+    border: 2px solid #0F0E17;
+    background-color: #0F0E17;
+    border-radius: 25%;
+    margin-right: 25px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.estimation-pie-chart {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%
+}
+
+/* Login Styles */
+.register-card-container {
+    background-color: #ffffff;
+    width: 168vh;
+    color: #000000;
+    padding: 25px;
+    border-radius: 8px;
+}

@@ -1,11 +1,9 @@
-﻿@page "/project/project-view/{ProjectId}/"
+﻿@page "/projects/{UserRole}/{UserId}/project-view/{ProjectId}/"
 @using Osiris.Data
 @inject ProjectService projectService
 @inject TicketService ticketService
-@inject UserService userService;
+@inject UserService userService
 @inject NavigationManager NavigationManager
-
-@inject IJSRuntime JS
 
 @if (isLoaded.Equals(false))
 {
@@ -13,15 +11,34 @@
 }
 else
 {
-    <h3>Project @projectObject.Name</h3>
-    <button type="button" class="btn-remove" @onclick="() => OnOpenProjectDeleteDialog()">Delete</button>
-    <button type="button" class="btn-outlined" @onclick="() => OnOpenProjectEditDialog()">Edit</button>
-    <a class="btn-outlined" href="/project/project-view/@projectObject.ProjectId/section-board">Section</a>
-    <p>@projectObject.Description</p>
-    <p>@projectObject.ProjectId</p>
+    <div class="container pl-0 mb-5">
+        <div class="row">
+            <div class="company-logo pl-3 ml-3">
+                <div class="oi oi-folder h3" style="top: -15px; color: #000000" />
+            </div>
+            <div class="col-5" style="top: 4px">
+                <div class="company-title">Project @projectObject.Name</div>
+            </div>
+            @if (UserRole.Equals("admin"))
+            {
+                <div class="col-1" style="max-width:none; top: 9px">
+                    <button class="button btn-main" style="height: 35px; width: max-content" @onclick="() => OnOpenProjectEditDialog()">
+                        <div class="mr-2 oi oi-pencil h7" style="color: #fff" />Edit
+                    </button>
+                </div>
+                <div class="col-1" style="max-width: none; top: 9px">
+                    <button class="btn-remove" style="height: 35px; width: max-content" @onclick="() => OnOpenProjectDeleteDialog()">
+                        <div class="mr-2 oi oi-trash h7" style="color: #fff" />Delete
+                    </button>
+                </div>
+            }
+            <div class="col-1" style="max-width: none; top: 9px">
+                <a class="btn-outlined mx-3" href="/projects/@UserRole/@UserId/project-view/@projectObject.ProjectId/section-board">Section</a>
+            </div>
+        </div>
+    </div>
 
     /* Getting Assigned Users for Tickets */
-    <div>Project Collaborators</div>
     #region get assigned users
     var assignedUserList = new List<string>();
     foreach (var ticket in ticketListObj)
@@ -31,17 +48,42 @@ else
             assignedUserList.Add(ticket.AssignedUser);
         }
     }
-    foreach (var assignedUser in assignedUserList.Distinct())
-    {
-        foreach (var users in userListObj)
-        {
-            if (users.UserId.ToString().Equals(assignedUser))
-            {
-                <div>@users.Name</div>
-            }
-        }
-    }
     #endregion
+
+    <div class="row">
+        <div class="col-8">
+            <div class="osiris-prediction-card">
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <h5 class="mb-4">Project Collaborators</h5>
+                    </div>
+                </div>
+                <div class="company-users-card">
+                    @foreach (var assignedUser in assignedUserList.Distinct())
+                    {
+                        foreach (var users in userListObj)
+                        {
+                            if (users.UserId.ToString().Equals(assignedUser))
+                            {
+                                <div class="company-users-secondary-card my-4">
+                                    <div class="row">
+                                        <div class="col-10">Name : @users.Name</div>
+                                    </div>
+                                    <div>Email: @users.Email</div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="osiris-prediction-card">
+                <h5 class="mb-4">Project Description</h5>
+                <p style="word-break: break-word">@projectObject.Description</p>
+            </div>
+        </div>
+    </div>
 
     if (OpenDeleteDialog)
     {
@@ -60,12 +102,15 @@ else
     List<Ticket> ticketListObj;
     List<User> userListObj;
 
-
     User userObject = new User();
     Project projectObject = new Project();
 
     [Parameter]
     public String ProjectId { get; set; }
+    [Parameter]
+    public String UserRole { get; set; }
+    [Parameter]
+    public String UserId { get; set; }
 
     Boolean isLoaded = false;
 
@@ -107,7 +152,7 @@ else
         if (accepted)
         {
             await projectService.DeleteProjectAsync(projectObject);
-            NavigationManager.NavigateTo("/projects");
+            NavigationManager.NavigateTo($"/projects/{UserRole}/{UserId}");
         }
         OpenDeleteDialog = false;
         StateHasChanged();

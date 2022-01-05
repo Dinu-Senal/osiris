@@ -1,7 +1,14 @@
-﻿@page "/"
+﻿@page "/logout"
+@inject NavigationManager NavigationManager
 
-<h1>Welcome to Osiris!</h1>
+<button class="btn btn-main" @onclick="() => Logout(typeof(MainLayout))">Logout</button>
 
-Welcome to your new app.
+@code {
+    [CascadingParameter] public App MyApp { get; set; }
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    private void Logout(Type layoutType)
+    {
+        NavigationManager.NavigateTo("/");
+        MyApp.SetLayout(layoutType);
+    }
+}

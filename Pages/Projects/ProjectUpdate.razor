@@ -1,55 +1,82 @@
 ﻿@using Osiris.Data
 @inject ProjectService projectService
+@inject CompanyService companyService
 @inject NavigationManager NavigationManager
 
-<div class="modal fade show" id="projectUpdateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">@projectObject.Name</h4>
+@if (companyListObj is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <div class="modal fade show" id="projectUpdateModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">@projectObject.Name</h4>
+                </div>
+
+                <EditForm Model="projectObject" OnValidSubmit="@ModalOk">
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <div class="form-group">
+                            <label for="Name" class="control-label">Name</label>
+                            <InputText @bind-Value="projectObject.Name"></InputText>
+                            <ValidationMessage For="@(() => projectObject.Name)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Description" class="control-label">Description</label>
+                            <InputText @bind-Value="@projectObject.Description"></InputText>
+                        </div>
+                        <div class="form-group">
+                            <label for="Status" class="control-label">Status</label>
+                            <InputSelect @bind-Value="@projectObject.Status">
+                                <option value="" selected disabled hidden>Choose Status</option>
+                                <option value="Complete">Complete</option>
+                                <option value="Incomplete">Incomplete</option>
+                            </InputSelect>
+                        </div>
+                        <div class="form-group">
+                            <label for="EndingDate" class="control-label">Ending Date</label>
+                            <InputDate @bind-Value="projectObject.EndDate"></InputDate>
+                            <ValidationMessage For="@(() => projectObject.EndDate)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Company" class="control-label">Company</label>
+                            <InputSelect @bind-Value="@projectObject.CompanyId" required>
+                                @foreach (var company in companyListObj)
+                                    {
+                                    <option value="@company.CompanyId">@company.Name</option>
+                                    }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => projectObject.CompanyId)" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="button btn-main">Update</button>
+                        <button type="button" class="btn-outlined" @onclick="@ModalCancel">Cancel</button>
+                    </div>
+                </EditForm>
             </div>
-
-            <EditForm Model="projectObject" OnValidSubmit="@ModalOk">
-                <div class="modal-body">
-                    <DataAnnotationsValidator />
-                    <div class="form-group">
-                        <label for="Name" class="control-label">Name</label>
-                        <InputText @bind-Value="projectObject.Name"></InputText>
-                        <ValidationMessage For="@(() => projectObject.Name)" />
-                    </div>
-                    <div class="form-group">
-                        <label for="Description" class="control-label">Description</label>
-                        <InputText @bind-Value="@projectObject.Description"></InputText>
-                    </div>
-                    <div class="form-group">
-                        <label for="Status" class="control-label">Status</label>
-                        <InputSelect @bind-Value="@projectObject.Status">
-                            <option value="" selected disabled hidden>Choose Status</option>
-                            <option value="Complete">Complete</option>
-                            <option value="Incomplete">Incomplete</option>
-                        </InputSelect>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="submit" class="button btn-main">Update</button>
-                    <button type="button" class="btn-outlined" @onclick="@ModalCancel">Cancel</button>
-                </div>
-            </EditForm>
         </div>
     </div>
-</div>
+}
 
 @code {
     [Parameter]
     public EventCallback<Boolean> OnClose { get; set; }
     [Parameter]
     public String RetrievedData { get; set; }
+
+    List<Company> companyListObj;
     Project projectObject = new Project();
 
     protected override async Task OnInitializedAsync()
     {
         projectObject = await Task.Run(() => projectService.GetProjectAsync(RetrievedData));
+        companyListObj = await Task.Run(() => companyService.GetAllCompaniesAsync());
+        StateHasChanged();
     }
     private Task ModalCancel()
     {

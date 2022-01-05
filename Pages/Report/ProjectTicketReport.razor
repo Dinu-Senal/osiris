@@ -1,0 +1,146 @@
+﻿@page "/report/company-report/{CompanyName}/{CompanyId}/ticket-report/{ProjectName}/{ProjectId}"
+@using Osiris.Data
+@inject TicketService ticketService
+@inject UserService userService
+@inject NavigationManager NavigationManager
+
+<div class="mb-5">
+    <div class="back-button-container" style="display: inline">
+        <div class="oi oi-chevron-left" @onclick="GoBack" style="color: #fff;" />
+    </div>
+    <h3 style="display: inline">@CompanyName Company - @ProjectName Project - Ticket Report</h3>
+</div>
+
+@if (ticketListObj is null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <div class="mb-4">
+        <div class="row">
+            <div class="col-3">
+                <select class="custom-select" @bind="ticketStatusFilter">
+                    <option value="All" selected>All</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Incomplete">Incomplete</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <input class="form-control" type="date" @bind="@ticketStartDateFilter" />
+            </div>
+            <div class="col-4">
+                <button class="btn-main mx-3" @onclick="filterByStatus" type="button">Filter</button>
+                <button class="btn-outlined" @onclick="ResetDate" type="button">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="osiris-secondary-card-heading p-2 mb-2">
+        <div class="row">
+            <div class="col">
+                Ticket Name
+            </div>
+            <div class="col">
+                Assigned User
+            </div>
+            <div class="col">
+                Description
+            </div>
+            <div class="col">
+                Ticket Status
+            </div>
+            <div class="col">
+            </div>
+        </div>
+    </div>
+
+    <div class="container-scroll mb-3">
+        @foreach (var ticket in ticketListObj)
+        {
+            @if (ticket.ProjectId.ToString().Equals(ProjectId))
+            {
+                <div class="ticket-report-card p-3 my-1">
+                    <div class="row">
+                        <div class="oi oi-pin px-3" style="color: black"></div>
+                        <div class="col">
+                            @ticket.Name
+                        </div>
+                        <div class="col">
+                            @if (userListObj is null)
+                            {
+                                <LoadingSpinner />
+                            } else {
+                                foreach (var user in userListObj) {
+                                    if(user.UserId.ToString().Equals(ticket.AssignedUser)) {
+                                        @user.Name
+                                    }
+                                }
+                            }
+                        </div>
+                        <div class="col">
+                            @ticket.Description
+                        </div>
+                        <div class="col">
+                            <div class="mr-4" >@ticket.Status</div>
+                        </div>
+                        <div class="col">
+                            @if (ticket.Status.Equals("Complete"))
+                            {
+                                <div class="oi oi-circle-check" style="color: #16C79A;" />
+                            }
+                            else
+                            {
+                                <div class="oi oi-circle-check" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public String CompanyId { get; set; }
+    [Parameter]
+    public String CompanyName { get; set; }
+    [Parameter]
+    public String ProjectId { get; set; }
+    [Parameter]
+    public String ProjectName { get; set; }
+
+    List<Ticket> ticketListObj;
+    List<User> userListObj;
+    private String ticketStatusFilter = "All";
+    private DateTime ticketStartDateFilter = DateTime.MinValue;
+
+    private async Task loadData()
+    {
+        ticketListObj = await Task.Run(() => ticketService.GetAllTicketsAsync());
+        userListObj = await Task.Run(() => userService.GetAllUsersAsync());
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await loadData();
+    }
+
+    private async Task filterByStatus()
+    {
+        String convertedStartDate = ticketStartDateFilter.ToString("MM/dd/yyyy");
+        ticketListObj = await Task.Run(() => ticketService.FilterTickets(ticketStatusFilter, convertedStartDate));
+        StateHasChanged();
+    }
+    private async void ResetDate()
+    {
+        ticketStartDateFilter = DateTime.MinValue;
+        ticketStatusFilter = "All";
+        await loadData();
+    }
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo($"/report/company-report/{CompanyName}/{CompanyId}/");
+    }
+}

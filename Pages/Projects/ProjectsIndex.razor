@@ -1,17 +1,21 @@
-﻿@page "/projects"
+﻿@page "/projects/{UserRole}/{UserId}"
 @using Osiris.Data
 @inject ProjectService projectService
+@inject CompanyService companyService
+@inject UserService userService
 @inject NavigationManager NavigationManager
 
-<div class="container pl-0">
+<div class="container mb-4 pl-0">
     <div class="row">
         <div class="col-6">
             <h3>Projects</h3>
         </div>
-        <hr />
-        <div class="col-5">
-            <button class="button btn-main" @onclick="() => OnOpenProjectAddDialog()">Create Project</button>
-        </div>
+        @if (UserRole.Equals("admin"))
+        {
+            <div class="col-5">
+                <button class="button btn-main" @onclick="() => OnOpenProjectAddDialog()">Create Project</button>
+            </div>
+        }
     </div>
 </div>
 
@@ -21,13 +25,84 @@
 }
 else
 {
-    @foreach (var project in projectListObj)
-    {
-        <div class="osiris-card mt-3">
-            <div class="text-center text-uppercase">@project.Name</div>
-            <a class="nav-link oi oi-arrow-circle-right" href="/project/project-view/@project.ProjectId" />
+    <div class="osiris-primary-border-card">
+        <div class="container">
+            <div class="div-center-container row">
+                @foreach (var project in projectListObj)
+                {
+                    if (UserRole.Equals("admin"))
+                    {
+                        <div class="osiris-project-card m-2" @onclick="() => NaviagateToProject(project.ProjectId)">
+                            <div class="text-capitalize mb-3" style="font-weight: 700; font-size: 20px">@project.Name</div>
+                            @if (project.Status.Equals("Complete"))
+                            {
+                                <div class="mr-2" style="display: inline">Complete</div>
+                                <div class="oi oi-circle-check" style="color: #16C79A; font-size: 20px; display: inline"></div>
+                            }
+                            else
+                            {
+                                <div class="mr-2" style="display: inline">Incomplete</div>
+                                <div class="sx oi oi-circle-check" style="display: inline; font-size: 20px;"></div>
+                            }
+                            @if (companyListObj is null)
+                            {
+                                <LoadingSpinner />
+                            }
+                            else
+                            {
+                                foreach (var company in companyListObj)
+                                {
+                                    @if (company.CompanyId.Equals(project.CompanyId))
+                                    {
+                                        <div class="project-company-container mt-3 p-2">
+                                            <div class="mx-3 oi oi-briefcase" style="display: inline; color: #fff;"></div>
+                                            <div style="display: inline">@company.Name</div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    }
+                    else if (UserRole.Equals("collaborator"))
+                    {
+                        @if (project.CompanyId.Equals(userObject.CompanyId))
+                        {
+                            <div class="osiris-project-card m-2" @onclick="() => NaviagateToProject(project.ProjectId)">
+                                <div class="text-capitalize mb-3" style="font-weight: 700; font-size: 20px">@project.Name</div>
+                                @if (project.Status.Equals("Complete"))
+                                {
+                                    <div class="mr-2" style="display: inline">Complete</div>
+                                    <div class="oi oi-circle-check" style="color: #16C79A; font-size: 20px; display: inline"></div>
+                                }
+                                else
+                                {
+                                    <div class="mr-2" style="display: inline">Incomplete</div>
+                                    <div class="sx oi oi-circle-check" style="display: inline; font-size: 20px;"></div>
+                                }
+                                @if (companyListObj is null)
+                                {
+                                    <LoadingSpinner />
+                                }
+                                else
+                                {
+                                    foreach (var company in companyListObj)
+                                    {
+                                        @if (company.CompanyId.Equals(project.CompanyId))
+                                        {
+                                            <div class="project-company-container mt-3 p-2">
+                                                <div class="mx-3 oi oi-briefcase" style="display: inline; color: #fff;"></div>
+                                                <div style="display: inline">@company.Name</div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        }
+                    }
+                }
+            </div>
         </div>
-    }
+    </div>
     @if (OpenAddProjectDialog)
     {
         <ProjectCreate OnClose="@(AddProject)" />
@@ -35,16 +110,30 @@ else
 }
 
 @code {
+    [Parameter]
+    public String UserRole { get; set; }
+    [Parameter]
+    public String UserId { get; set; }
+
     List<Project> projectListObj;
+    List<Company> companyListObj;
+    User userObject = new User();
 
     private async Task loadData()
     {
         projectListObj = await Task.Run(() => projectService.GetAllProjectsAsync());
+        companyListObj = await Task.Run(() => companyService.GetAllCompaniesAsync());
+        userObject = await Task.Run(() => userService.GetUserAsync(UserId));
         StateHasChanged();
     }
     protected override async Task OnInitializedAsync()
     {
         await loadData();
+    }
+
+    private void NaviagateToProject(Guid projectId)
+    {
+        NavigationManager.NavigateTo($"/projects/{UserRole}/{UserId}/project-view/{projectId}");
     }
 
     /* Model Logic */

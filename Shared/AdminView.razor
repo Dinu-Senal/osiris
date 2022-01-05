@@ -1,0 +1,23 @@
+﻿@page "/AdminView"
+@using Osiris.Data
+@inherits LayoutComponentBase
+@inject UserLoginData _UserLoginData
+
+<div class="page">
+    <div class="sidebar">
+        <AdminNavMenu UserRole="admin" UserId="@userId" />
+    </div>
+    <div class="main">
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code {
+    private String userId;
+    protected override async Task OnInitializedAsync()
+    {
+        userId = _UserLoginData.RetrievedUserId;
+    }
+}

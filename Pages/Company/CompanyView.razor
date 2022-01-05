@@ -1,141 +1,161 @@
-﻿@page "/company/company-view/{CompanyId}/"
+﻿@page "/companies/company-view/{CompanyId}/"
 @using Osiris.Data
-@using Osiris.Pages.User
 @inject CompanyService companyService
 @inject UserService userService
 @inject NavigationManager NavigationManager
 
-@if (isLoaded.Equals(false))
-{
-    <LoadingSpinner />
-}
-else
-{
-    <div class="container pl-0 mb-5">
-        <div class="row">
-            <div class="company-logo pl-3 ml-3">
-                <div class="oi oi-briefcase h3" style="top: -15px; color: #000000" />
-            </div>
-            <div class="col-3" style="top: 4px">
-                <div class="company-title">@companyObject.Name</div>
-            </div>
-            <div class="col-1" style="max-width:none; top: 9px">
-                <button class="button btn-main" style="height: 35px; width: max-content" @onclick="OnOpenCompanyEditDialog">
-                    <div class="mr-2 oi oi-pencil h7" style="color: #fff" />Edit
-                </button>
-            </div>
-            <div class="col-1" style="max-width: none; top: 9px">
-                <button class="btn-remove" style="height: 35px; width: max-content" @onclick="OnOpenCompanyDeleteDialog">
-                    <div class="mr-2 oi oi-trash h7" style="color: #fff" />Delete
-                </button>
-            </div>
+<div class="container pl-0 mb-5">
+    <div class="row">
+        <div class="company-logo pl-3 ml-3">
+            <div class="oi oi-briefcase h3" style="top: -15px; color: #000000" />
+        </div>
+        <div class="col-3" style="top: 4px">
+            <div class="company-title">@companyObject.Name</div>
+        </div>
+        <div class="col-1" style="max-width:none; top: 9px">
+            <button class="button btn-main" style="height: 35px; width: max-content" @onclick="OnOpenCompanyEditDialog">
+                <div class="mr-2 oi oi-pencil h7" style="color: #fff" />Edit
+            </button>
+        </div>
+        <div class="col-1" style="max-width: none; top: 9px">
+            <button class="btn-remove" style="height: 35px; width: max-content" @onclick="OnOpenCompanyDeleteDialog">
+                <div class="mr-2 oi oi-trash h7" style="color: #fff" />Delete
+            </button>
         </div>
     </div>
+</div>
 
-    <div class="company-details">
-        <div class="company-title mb-2">Company Description</div>
-        <p>@companyObject.Description</p>
-        <div class="company-title mb-2">Company Roles</div>
-        <button class="col-1 btn-outlined" style="max-width:200px" @onclick="OnOpenUserAddDialog">Add User</button>
-        @if (userListObj is null)
-        {
-            <LoadingSpinner />
-        }
-        else
-        {
-            @foreach (var users in userListObj)
+<div class="row">
+    <div class="col-8">
+        <div class="osiris-prediction-card">
+            <div class="row mb-4">
+                <div class="col-6">
+                    <h5 class="mb-4">Company User List</h5>
+                </div>
+                <div class="col-3">
+                    <button class="btn-outlined" @onclick="OnOpenUserAddDialog">Add User</button>
+                </div>
+            </div>
+            @if (userListObj is null)
             {
-                if (users.CompanyId == companyObject.CompanyId)
-                {
-                    <div class="container">
-                        <div class="row mb-2">
-                            <div class="col-2">@users.Name</div>
-                            <div class="col-1 company-users-name oi oi-trash" @onclick="() => OnOpenUserDeleteDialog(users.UserId)" />
-                        </div>
-                    </div>
-                }
+                <LoadingSpinner />
             }
-        }
+            else
+            {
+                <div class="company-users-card">
+                    @foreach (var users in userListObj)
+                    {
+                        if (users.CompanyId == companyObject.CompanyId)
+                        {
+                                <div class="company-users-secondary-card my-4">
+                                    <div class="row">
+                                        <div class="col-10">Name : @users.Name</div>
+                                        <div class="col-2 company-users-name oi oi-trash p-0" 
+                                             style="font-size:30px;"
+                                             @onclick="() => OnOpenUserDeleteDialog(users.UserId)" />
+                                    </div>
+                                    <div>Email: @users.Email</div>
+                                </div>
+                        }
+                    }
+                </div>
+            }
+        </div>
     </div>
+    <div class="col">
+        <div class="osiris-prediction-card">
+            <h5 class="mb-4">Company Description</h5>
+            <p style="word-break: break-word">@companyObject.Description</p>
+        </div>
+    </div>
+</div>
 
+@if (OpenDeleteCompanyDialog)
+{
     /* Delete Company */
-    @if (OpenDeleteCompanyDialog)
-    {
-        <ModalDeleteDialog Title="Are you sure ?"
-                           Text="This may cause to lose projects that are assigned to this company."
-                           ButtonName="Delete"
-                           OnClose="@DeleteCompany" />
-    }
+    <ModalDeleteDialog Title="Are you sure ?"
+                       Text="This may cause to lose projects that are assigned to this company."
+                       ButtonName="Delete"
+                       OnClose="@DeleteCompany" />
+}
+@if (OpenEditCompanyDialog)
+{
     /* Edit Company */
-    @if (OpenEditCompanyDialog)
-    {
-        <CompanyUpdate OnClose="@(EditCompany)" RetrievedData="@companyObject.CompanyId.ToString()" />
-    }
+    <CompanyUpdate OnClose="@(EditCompany)" RetrievedData="@companyObject.CompanyId.ToString()" />
+}
+@if (OpenAddUserDialog)
+{
     /* Add User */
-    @if (OpenAddUserDialog)
-    {
-        #region Add User
-        <div class="modal fade show" id="userAddModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add User</h4>
+    #region Add User
+    <div class="modal fade show" id="userAddModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add User</h4>
+                </div>
+
+                <EditForm Model="userObject" OnValidSubmit="@AddUser">
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <div class="form-group">
+                            <label for="Name" class="control-label">Name</label>
+                            <InputText @bind-Value="userObject.Name"></InputText>
+                            <ValidationMessage For="@(() => userObject.Name)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Email" class="control-label">Email</label>
+                            <InputText type="email" @bind-Value="userObject.Email"></InputText>
+                            <ValidationMessage For="@(() => userObject.Email)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Password" class="control-label">Password</label>
+                            <InputText type="password" @bind-Value="userObject.Password"></InputText>
+                            <ValidationMessage For="@(() => userObject.Password)" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Designation" class="control-label">User Type</label>
+                            <InputSelect @bind-Value="@userObject.Designation">
+                                <option value="" selected disabled hidden>Choose User Type</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Collaborator">Collaborator</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => userObject.Designation)" />
+                        </div>
                     </div>
 
-                    <EditForm Model="userObject" OnValidSubmit="@AddUser">
-                        <div class="modal-body">
-                            <DataAnnotationsValidator />
-                            <div class="form-group">
-                                <label for="Name" class="control-label">Name</label>
-                                <InputText @bind-Value="userObject.Name"></InputText>
-                                <ValidationMessage For="@(() => userObject.Name)" />
-                            </div>
-                            <div class="form-group">
-                                <label for="Designation" class="control-label">User Type</label>
-                                <InputSelect @bind-Value="@userObject.Designation">
-                                    <option value="" selected disabled hidden>Choose User Type</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Collaborator">Collaborator</option>
-                                </InputSelect>
-                                <ValidationMessage For="@(() => userObject.Designation)" />
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="submit" class="button btn-main">Add</button>
-                            <button type="button" class="btn-outlined" @onclick="@OnCancelUserAddDialog">Cancel</button>
-                        </div>
-                    </EditForm>
-                </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="button btn-main">Add</button>
+                        <button type="button" class="btn-outlined" @onclick="@OnCancelUserAddDialog">Cancel</button>
+                    </div>
+                </EditForm>
             </div>
         </div>
-        #endregion
-    }
-    /* User Invitation */
-    @if (InvitationSendSuccess)
-    {
-        #region User Invitation
-        <div class="modal fade show" id="invitationModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
-            <div class="notification-card">
-                <div class="d-flex justify-content-center mb-3">
-                    <div class="oi oi-check" />
-                </div>
-                <div class="mb-3">Invitation Send Successfully</div>
-                <button class="button btn-main" @onclick="OnInvitationMessage">Back</button>
-            </div>
-        </div>
-        #endregion
-    }
-    /* Delete User */
-    @if (OpenDeleteUserDialog)
-    {
-        <ModalDeleteDialog Title="Are you sure ?"
-                           Text="Deleting the user will cause to unassign the user from the project"
-                           ButtonName="Delete"
-                           OnClose="@DeleteUser" />
-    }
+    </div>
+    #endregion
 }
-
+@if (InvitationSendSuccess)
+{
+    /* User Invitation */
+    #region User Invitation
+    <div class="modal fade show" id="invitationModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+        <div class="notification-card">
+            <div class="d-flex justify-content-center mb-3">
+                <div class="oi oi-check" />
+            </div>
+            <div class="mb-3">Invitation Send Successfully</div>
+            <button class="button btn-main" @onclick="OnInvitationMessage">Back</button>
+        </div>
+    </div>
+    #endregion
+}
+@if (OpenDeleteUserDialog)
+{
+    /* Delete User */
+    <ModalDeleteDialog Title="Are you sure ?"
+                       Text="Deleting the user will cause to unassign the user from the project"
+                       ButtonName="Delete"
+                       OnClose="@DeleteUser" />
+}
 
 @code {
     [Parameter]
@@ -146,8 +166,6 @@ else
     List<User> userListObj;
     Company companyObject = new Company();
     User userObject = new User();
-
-    Boolean isLoaded = true;
 
     private async Task loadCompanyData()
     {
@@ -163,7 +181,6 @@ else
     {
         await loadCompanyData();
         await loadUserData();
-        isLoaded = true;
     }
 
     /* Modal Logic */

@@ -8,39 +8,39 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column text-uppercase">
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+            <NavLink class="nav-link" href=@($"user/{UserRole}/{UserId}")>
+                <span class="oi oi-person" style="color: #fff" aria-hidden="true"></span> User
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="user">
-                <span class="oi oi-list" aria-hidden="true"></span> User
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="projects">
-                <span class="oi oi-list" aria-hidden="true"></span> Projects
+            <NavLink class="nav-link" href=@($"projects/{UserRole}/{UserId}")>
+                <span class="oi oi-folder" style="color: #fff" aria-hidden="true"></span> Projects
             </NavLink>
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="companies">
-                <span class="oi oi-list" aria-hidden="true"></span> Company
+                <span class="oi oi-briefcase" style="color: #fff" aria-hidden="true"></span> Company
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="report">
+                <span class="oi oi-document" style="color: #fff" aria-hidden="true"></span> Report
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/logout" Match="NavLinkMatch.All">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
             </NavLink>
         </li>
     </ul>
 </div>
 
 @code {
+    [Parameter]
+    public String UserRole { get; set; }
+    [Parameter]
+    public String UserId { get; set; }
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
