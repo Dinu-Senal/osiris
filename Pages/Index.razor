@@ -1,12 +1,12 @@
 ﻿@page "/home"
 @inject NavigationManager NavigationManager
 
-<button class="btn btn-secondary" @onclick="() => ButtonClick(typeof(MainLayout))">Login Page</button>
+<button class="btn btn-main" @onclick="() => Logout(typeof(MainLayout))">Logout</button>
 
 @code {
     [CascadingParameter] public App MyApp { get; set; }
 
-    void ButtonClick(Type layoutType)
+    private void Logout(Type layoutType)
     {
         NavigationManager.NavigateTo("/");
         MyApp.SetLayout(layoutType);

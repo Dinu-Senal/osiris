@@ -6,19 +6,20 @@
 @inject NavigationManager NavigationManager
 
 <div class="div-center-container">
-    <div class="register-card-container">
-        <div class="row mb-3">
-            <div class="col">
-                <h3>Login</h3>
+
+    @if (companyListObj is null)
+    {
+        <LoadingSpinner />
+    }
+    else
+    {
+        <div class="register-card-container">
+            <div class="row mb-3">
+                <div class="col">
+                    <h3>Login</h3>
+                </div>
             </div>
-        </div>
-        @if (companyListObj is null)
-        {
-            <LoadingSpinner />
-        }
-        else
-        {
-            if (authorized)
+            @if (authorized)
             {
                 <div class="form mb-4">
                     <label>Enter Email</label>
@@ -83,8 +84,8 @@
                     </div>
                 }
             }
-        }
-    </div>
+        </div>
+    }
 </div>
 
 @code {
@@ -129,14 +130,14 @@
         {
             userId = userObject.UserId.ToString();
             _UserLoginData.RetrievedUserId = userId;
-            NavigationManager.NavigateTo($"/user/admin/?id={userId}");
+            NavigationManager.NavigateTo($"/user/admin/{userId}");
             MyApp.SetLayout(typeof(AdminView));
         }
         else if (userObject.Designation.Equals("Collaborator"))
         {
             userId = userObject.UserId.ToString();
             _UserLoginData.RetrievedUserId = userId;
-            NavigationManager.NavigateTo($"/user/collaborator/?id={userId}");
+            NavigationManager.NavigateTo($"/user/collaborator/{userId}");
             MyApp.SetLayout(typeof(CollaboratorView));
         }
     }

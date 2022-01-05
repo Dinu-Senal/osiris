@@ -30,6 +30,33 @@ else
                     }
                 </div>
             </div>
+            @if (notPrivileged)
+            {
+                <div class="modal fade show" id="emailConsistModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Registration Error</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                @if (companySelected)
+                                {
+                                    <div>Please select a company to proceed</div>
+                                }
+                                else
+                                {
+                                    <div>This email already registered to the system</div>
+                                }
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="button btn-outlined" @onclick="@onCancelRegister">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
             <EditForm Model="userObject" OnValidSubmit="@CreateUser">
                 <DataAnnotationsValidator />
                 <div class="form-group">
@@ -66,36 +93,15 @@ else
                 <div class="form-group">
                     <label for="Company" class="control-label">Company</label>
                     <InputSelect @bind-Value="@userObject.CompanyId">
-                        <option value="" selected disabled hidden>Choose a Company</option>
+                        <option value="" selected disabled hidden>Choose Company</option>
                         @foreach (var company in companyListObj)
                             {
                             <option value="@company.CompanyId">@company.Name</option>
                             }
                     </InputSelect>
-                    <ValidationMessage For="@(() => userObject.Designation)" />
                 </div>
                 <button type="submit" class="button btn-main">Add</button>
             </EditForm>
-            @if (notPrivileged)
-            {
-                <div class="modal fade show" id="emailConsistModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Registration Error</h4>
-                            </div>
-
-                            <div class="modal-body">
-                                This email already registered to the system
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="button" class="button btn-outlined" @onclick="@onCancelRegister">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
         </div>
     </div>
 }
@@ -111,6 +117,7 @@ else
 
     private String userId = String.Empty;
     private Boolean notPrivileged = false;
+    private Boolean companySelected = false;
     private Boolean loginInitialized = false;
 
     private async Task loadCompanyData()
@@ -135,27 +142,34 @@ else
         {
             userId = userObject.UserId.ToString();
             _UserLoginData.RetrievedUserId = userId;
-            NavigationManager.NavigateTo($"/user/admin/?id={userId}");
+            NavigationManager.NavigateTo($"/user/admin/{userId}");
             MyApp.SetLayout(typeof(AdminView));
         }
         else if (userObject.Designation.Equals("Collaborator"))
         {
             userId = userObject.UserId.ToString();
             _UserLoginData.RetrievedUserId = userId;
-            NavigationManager.NavigateTo($"/user/collaborator/?id={userId}");
+            NavigationManager.NavigateTo($"/user/collaborator/{userId}");
             MyApp.SetLayout(typeof(CollaboratorView));
         }
     }
     private async void CreateUser()
     {
         var emailDuplicate = userListObj.FirstOrDefault(data => data.Email == userObject.Email);
-        if (emailDuplicate is null)
+        var companyExist = companyListObj.FirstOrDefault(data => data.CompanyId == userObject.CompanyId);
+
+        if (companyExist is null)
         {
+            notPrivileged = true;
+            companySelected = true;
+        }
+        else if (emailDuplicate is null) {
             await userService.AddUserAsync(userObject);
             LoginInitialized();
         }
         else
         {
+            companySelected = false;
             notPrivileged = true;
         }
     }
@@ -172,7 +186,7 @@ else
     private void onCancelRegister()
     {
         notPrivileged = false;
-        NavigationManager.NavigateTo("/register-user");
+        NavigationManager.NavigateTo($"/register-user/{UserRole}");
     }
     private void GoBack()
     {
