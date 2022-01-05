@@ -3,12 +3,29 @@
 @inject UserService userService
 @inject NavigationManager NavigationManager
 
-<h3>@UserRole</h3>
-<h3>@UserId</h3>
-<p>@userObject.Name</p>
-<p>@userObject.Email</p>
-<p>@userObject.Password</p>
-<button class="btn-main" @onclick="UpdateUser">Update User Details</button>
+<div class="container pl-0 mb-5">
+    <div class="row">
+        <div class="company-logo pl-3 ml-3">
+            <div class="oi oi-person h3" style="top: -15px; color: #000000" />
+        </div>
+        <div class="col-5" style="top: 4px">
+            <div class="company-title">User @userObject.Name</div>
+        </div>
+        <div class="col-1" style="max-width:none; top: 9px">
+            <button class="button btn-main" style="height: 35px; width: max-content" @onclick="UpdateUser">
+                <div class="mr-2 oi oi-pencil h7" style="color: #fff" />Update User Details
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="osiris-prediction-card">
+    <h5 class="mb-4">User Details</h5>
+    <p>Role: @UserRole</p>
+    <p>Name: @userObject.Name</p>
+    <p>Email: @userObject.Email</p>
+    <p>Password: @userObject.Password</p>
+</div>
 
 @if (userUpdate)
 {

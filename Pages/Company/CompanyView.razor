@@ -1,4 +1,4 @@
-﻿@page "/company/company-view/{CompanyId}/"
+﻿@page "/companies/company-view/{CompanyId}/"
 @using Osiris.Data
 @inject CompanyService companyService
 @inject UserService userService
@@ -25,30 +25,49 @@
     </div>
 </div>
 
-<div class="company-details-card">
-    <div class="company-title mb-2">Company Description</div>
-    <p>@companyObject.Description</p>
-    <div class="company-title mb-2">Company Roles</div>
-    <button class="col-1 btn-outlined" style="max-width:200px" @onclick="OnOpenUserAddDialog">Add User</button>
-    @if (userListObj is null)
-    {
-        <LoadingSpinner />
-    }
-    else
-    {
-        @foreach (var users in userListObj)
-        {
-            if (users.CompanyId == companyObject.CompanyId)
+<div class="row">
+    <div class="col-8">
+        <div class="osiris-prediction-card">
+            <div class="row mb-4">
+                <div class="col-6">
+                    <h5 class="mb-4">Company User List</h5>
+                </div>
+                <div class="col-3">
+                    <button class="btn-outlined" @onclick="OnOpenUserAddDialog">Add User</button>
+                </div>
+            </div>
+            @if (userListObj is null)
             {
-                <div class="container">
-                    <div class="row mb-2">
-                        <div class="col-2">@users.Name</div>
-                        <div class="col-1 company-users-name oi oi-trash" @onclick="() => OnOpenUserDeleteDialog(users.UserId)" />
-                    </div>
+                <LoadingSpinner />
+            }
+            else
+            {
+                <div class="company-users-card">
+                    @foreach (var users in userListObj)
+                    {
+                        if (users.CompanyId == companyObject.CompanyId)
+                        {
+                                <div class="company-users-secondary-card my-4">
+                                    <div class="row">
+                                        <div class="col-10">Name : @users.Name</div>
+                                        <div class="col-2 company-users-name oi oi-trash p-0" 
+                                             style="font-size:30px;"
+                                             @onclick="() => OnOpenUserDeleteDialog(users.UserId)" />
+                                    </div>
+                                    <div>Email: @users.Email</div>
+                                </div>
+                        }
+                    }
                 </div>
             }
-        }
-    }
+        </div>
+    </div>
+    <div class="col">
+        <div class="osiris-prediction-card">
+            <h5 class="mb-4">Company Description</h5>
+            <p style="word-break: break-word">@companyObject.Description</p>
+        </div>
+    </div>
 </div>
 
 @if (OpenDeleteCompanyDialog)
@@ -137,8 +156,6 @@
                        ButtonName="Delete"
                        OnClose="@DeleteUser" />
 }
-}
-
 
 @code {
     [Parameter]

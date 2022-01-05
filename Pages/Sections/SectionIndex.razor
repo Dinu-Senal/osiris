@@ -1,4 +1,4 @@
-﻿@page  "/projects/{UserRole}/project-view/{ProjectId:guid}/section-board"
+﻿@page  "/projects/{UserRole}/{UserId}/project-view/{ProjectId:guid}/section-board"
 @using Osiris.Data
 @inject SectionService sectionService
 @inject TicketService ticketService
@@ -269,23 +269,20 @@ else
                                 <InputDate @bind-Value="ticketObject.EndDate"></InputDate>
                                 <ValidationMessage For="@(() => ticketObject.EndDate)" />
                             </div>
-                            @if (UserRole.Equals("admin"))
-                            {
-                                <div class="form-group">
-                                    <label for="User" class="control-label">User</label>
-                                    <InputSelect @bind-Value="@ticketObject.AssignedUser">
-                                        <option value="" selected disabled hidden>Assign User</option>
-                                        @foreach (var users in userListObj)
+                            <div class="form-group">
+                                <label for="User" class="control-label">User</label>
+                                <InputSelect @bind-Value="@ticketObject.AssignedUser">
+                                    <option value="" selected disabled hidden>Assign User</option>
+                                    @foreach (var users in userListObj)
+                                                {
+                                                    if (users.CompanyId.Equals(projectObject.CompanyId))
                                                     {
-                                                        if (users.CompanyId.Equals(projectObject.CompanyId))
-                                                        {
-                                                <option value="@users.UserId.ToString()">@users.Name</option>
-                                                        }
+                                            <option value="@users.UserId.ToString()">@users.Name</option>
                                                     }
-                                    </InputSelect>
-                                    <ValidationMessage For="@(() => ticketObject.AssignedUser)" />
-                                </div>
-                            }
+                                                }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => ticketObject.AssignedUser)" />
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="button btn-main">Confirm</button>
@@ -330,6 +327,8 @@ else
     public Guid ProjectId { get; set; }
     [Parameter]
     public String UserRole { get; set; }
+    [Parameter]
+    public String UserId { get; set; }
 
     private async Task loadSectionData()
     {
