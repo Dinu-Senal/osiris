@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Osiris.Migrations
 {
-    public partial class migrationversion01 : Migration
+    public partial class migrationv1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

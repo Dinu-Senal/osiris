@@ -44,7 +44,6 @@ namespace Osiris
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddSingleton<WeatherForecastService>();
             services.AddScoped<CompanyService>();
             services.AddScoped<UserService>();
             services.AddScoped<ProjectService>();

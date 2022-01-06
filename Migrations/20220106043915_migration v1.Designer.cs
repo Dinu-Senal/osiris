@@ -10,8 +10,8 @@ using Osiris.Data;
 namespace Osiris.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220105130116_migration version 01")]
-    partial class migrationversion01
+    [Migration("20220106043915_migration v1")]
+    partial class migrationv1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
